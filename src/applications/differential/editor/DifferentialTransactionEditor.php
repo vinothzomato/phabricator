@@ -904,6 +904,7 @@ final class DifferentialTransactionEditor
     $author_phid = $revision->getAuthorPHID();
     $actor_phid = $this->getActingAsPHID();
     $actor_is_author = ($author_phid == $actor_phid);
+    $actor_is_reviewer = false;
 
     $config_abandon_key = 'differential.always-allow-abandon';
     $always_allow_abandon = PhabricatorEnv::getEnvConfig($config_abandon_key);
@@ -922,6 +923,13 @@ final class DifferentialTransactionEditor
     $status_accepted = ArcanistDifferentialRevisionStatus::ACCEPTED;
     $status_abandoned = ArcanistDifferentialRevisionStatus::ABANDONED;
     $status_closed = ArcanistDifferentialRevisionStatus::CLOSED;
+
+    foreach ($revision->getReviewerStatus() as $reviewer) {
+      if ($reviewer->getReviewerPHID() == $actor_phid) {
+        $actor_is_reviewer = true;
+        break;
+      }
+    }
 
     switch ($action) {
       case DifferentialAction::ACTION_ACCEPT:
@@ -1112,7 +1120,7 @@ final class DifferentialTransactionEditor
         // any state. This is an automated action taken by the daemons.
 
         if (!$this->getIsCloseByCommit()) {
-          if (!$actor_is_author && !$always_allow_close) {
+          if (!$actor_is_author && !$always_allow_close && !$actor_is_reviewer) {
             return pht(
               'You can not close this revision because you do not own it. To '.
               'close a revision, you must be its owner.');
