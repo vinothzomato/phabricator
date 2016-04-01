@@ -610,7 +610,6 @@ final class DifferentialRevisionViewController extends DifferentialController {
   private function getRevisionCommentActions(DifferentialRevision $revision) {
     $actions = array(
       DifferentialAction::ACTION_COMMENT => true,
-      DifferentialAction::ACTION_PULL_REQUEST => true,
     );
 
     $viewer = $this->getViewer();
@@ -662,6 +661,7 @@ final class DifferentialRevisionViewController extends DifferentialController {
           $actions[DifferentialAction::ACTION_REQUEST] = true;
           $actions[DifferentialAction::ACTION_RETHINK] = true;
           $actions[DifferentialAction::ACTION_CLOSE] = true;
+          $actions[DifferentialAction::ACTION_PULL_REQUEST] = true;
           break;
         case ArcanistDifferentialRevisionStatus::CLOSED:
           break;
@@ -689,6 +689,7 @@ final class DifferentialRevisionViewController extends DifferentialController {
           $actions[DifferentialAction::ACTION_ACCEPT] = !$viewer_has_accepted;
           $actions[DifferentialAction::ACTION_REJECT] = true;
           $actions[DifferentialAction::ACTION_RESIGN] = $viewer_is_reviewer;
+          $actions[DifferentialAction::ACTION_CLOSE] = $viewer_is_reviewer;
           break;
         case ArcanistDifferentialRevisionStatus::CLOSED:
         case ArcanistDifferentialRevisionStatus::ABANDONED:
@@ -696,7 +697,9 @@ final class DifferentialRevisionViewController extends DifferentialController {
       }
       if ($status != ArcanistDifferentialRevisionStatus::CLOSED) {
         $actions[DifferentialAction::ACTION_CLAIM] = true;
-        $actions[DifferentialAction::ACTION_CLOSE] = $always_allow_close;
+        if ($always_allow_close) {
+          $actions[DifferentialAction::ACTION_CLOSE] = true;
+        }
       }
     }
 
@@ -710,7 +713,6 @@ final class DifferentialRevisionViewController extends DifferentialController {
     foreach ($actions as $action) {
       $actions_dict[$action] = DifferentialAction::getActionVerb($action);
     }
-
     return $actions_dict;
   }
 
