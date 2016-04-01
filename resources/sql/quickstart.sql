@@ -3051,6 +3051,8 @@ CREATE TABLE `user` (
   `accountSecret` binary(64) NOT NULL,
   `isEnrolledInMultiFactor` tinyint(1) NOT NULL DEFAULT '0',
   `profileImageCache` varchar(255) COLLATE {$COLLATE_TEXT} DEFAULT NULL,
+  `githubToken` varchar(255) COLLATE {$COLLATE_TEXT} DEFAULT NULL,
+  `githubUsername` varchar(255) COLLATE {$COLLATE_TEXT} DEFAULT NULL,
   `availabilityCache` varchar(255) COLLATE {$COLLATE_TEXT} DEFAULT NULL,
   `availabilityCacheTTL` int(10) unsigned DEFAULT NULL,
   `isMailingList` tinyint(1) NOT NULL,

@@ -1003,6 +1003,7 @@ ALTER TABLE `{$NAMESPACE}_user`.`user`
   MODIFY `email` varchar(255) CHARACTER SET binary,
   MODIFY `passwordSalt` varchar(32) CHARACTER SET binary,
   MODIFY `passwordHash` varchar(32) CHARACTER SET binary,
+  MODIFY `githubToken` varchar(255) CHARACTER SET binary,
   MODIFY `profileImagePHID` varchar(64) CHARACTER SET binary,
   MODIFY `consoleTab` varchar(64) CHARACTER SET binary,
   MODIFY `conduitCertificate` varchar(255) CHARACTER SET binary,
@@ -1017,6 +1018,7 @@ ALTER TABLE `{$NAMESPACE}_user`.`user`
   MODIFY `passwordHash` varchar(32) COLLATE utf8_bin,
   MODIFY `profileImagePHID` varchar(64) COLLATE utf8_bin,
   MODIFY `consoleTab` varchar(64) COLLATE utf8_general_ci NOT NULL,
+  MODIFY `githubToken` varchar(255) COLLATE utf8_general_ci,
   MODIFY `conduitCertificate` varchar(255) COLLATE utf8_general_ci NOT NULL,
   MODIFY `timezoneIdentifier` varchar(255) COLLATE utf8_general_ci NOT NULL;
 

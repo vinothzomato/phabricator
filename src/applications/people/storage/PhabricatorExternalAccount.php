@@ -15,6 +15,7 @@ final class PhabricatorExternalAccount extends PhabricatorUserDAO
   protected $emailVerified = 0;
   protected $accountURI;
   protected $profileImagePHID;
+  protected $accessToken;
   protected $properties = array();
 
   private $profileImageFile = self::ATTACHABLE;
@@ -52,6 +53,7 @@ final class PhabricatorExternalAccount extends PhabricatorUserDAO
         'emailVerified' => 'bool',
         'profileImagePHID' => 'phid?',
         'accountURI' => 'text255?',
+        'accessToken' => 'text255?',
       ),
       self::CONFIG_KEY_SCHEMA => array(
         'key_phid' => null,

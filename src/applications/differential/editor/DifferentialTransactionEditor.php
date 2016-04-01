@@ -478,6 +478,10 @@ final class DifferentialTransactionEditor
               'data' => $data,
             );
 
+            var_dump($actor->getGithubUsername());
+            var_dump($actor->getGithubToken());
+            die();
+
             $results[] = id(new DifferentialTransaction())
               ->setTransactionType($type_edge)
               ->setMetadataValue('edge:type', $edge_reviewer)

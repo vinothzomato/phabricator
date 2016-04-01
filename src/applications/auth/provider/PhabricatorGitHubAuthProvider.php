@@ -7,6 +7,20 @@ final class PhabricatorGitHubAuthProvider
     return pht('GitHub');
   }
 
+  protected function renderLoginForm(AphrontRequest $request, $mode) {
+    $adapter = $this->getAdapter();
+    $adapter->setState($this->getAuthCSRFCode($request));
+
+    $adapter->setScope('repo');
+
+    $attributes = array(
+      'method' => 'GET',
+      'uri' => $adapter->getAuthenticateURI(),
+    );
+
+    return $this->renderStandardLoginButton($request, $mode, $attributes);
+  }
+
   protected function getProviderConfigurationHelp() {
     $uri = PhabricatorEnv::getProductionURI('/');
     $callback_uri = PhabricatorEnv::getURI($this->getLoginURI());

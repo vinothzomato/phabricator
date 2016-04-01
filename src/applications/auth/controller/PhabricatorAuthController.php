@@ -231,7 +231,6 @@ abstract class PhabricatorAuthController extends PhabricatorController {
           $account->getProviderKey()));
       return array($account, $provider, $response);
     }
-
     return array($account, $provider, null);
   }
 

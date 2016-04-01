@@ -33,6 +33,8 @@ final class PhabricatorUser
   protected $availabilityCache;
   protected $availabilityCacheTTL;
   protected $timezoneIdentifier = '';
+  protected $githubToken;
+  protected $githubUsername;
 
   protected $consoleEnabled = 0;
   protected $consoleVisible = 0;
@@ -195,6 +197,8 @@ final class PhabricatorUser
         'profileImageCache' => 'text255?',
         'availabilityCache' => 'text255?',
         'availabilityCacheTTL' => 'uint32?',
+        'githubToken' => 'text255?',
+        'githubUsername' => 'text255?',
       ),
       self::CONFIG_KEY_SCHEMA => array(
         'key_phid' => null,
@@ -894,6 +898,15 @@ final class PhabricatorUser
     }
 
     return idx($availability, 'until');
+  }
+
+  /**
+   * Get this user's github access token.
+   *
+   * @return string|null 
+   */
+  public function getGithubAccessToken() {
+    return $this->githubToken;
   }
 
 

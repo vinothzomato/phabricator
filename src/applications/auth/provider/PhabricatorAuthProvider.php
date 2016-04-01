@@ -202,7 +202,7 @@ abstract class PhabricatorAuthProvider extends Phobject {
       throw new Exception(
         pht(
           "AuthAdapter (of class '%s') has an invalid implementation: ".
-          "no adapter type.",
+          "no adaptePhutilOAuthAuthAdapterr type.",
           $adapter_class));
     }
 
@@ -230,6 +230,9 @@ abstract class PhabricatorAuthProvider extends Phobject {
     $account->setRealName($adapter->getAccountRealName());
     $account->setEmail($adapter->getAccountEmail());
     $account->setAccountURI($adapter->getAccountURI());
+    if ($adapter->getAdapterType() == 'github') {
+      $account->setAccessToken($this->getOAuthAccessToken($account));
+    }
 
     $account->setProfileImagePHID(null);
     $image_uri = $adapter->getAccountImageURI();

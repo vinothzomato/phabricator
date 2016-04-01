@@ -256,6 +256,7 @@ final class AphrontRequest extends Phobject {
     }
 
     $valid = $this->getUser()->validateCSRFToken($token);
+
     if (!$valid) {
 
       // Add some diagnostic details so we can figure out if some CSRF issues
