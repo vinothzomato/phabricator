@@ -47,7 +47,7 @@ final class DifferentialCreateCommentConduitAPIMethod
     $xactions = array();
 
     $action = $request->getValue('action');
-    if ($action && ($action != 'comment') && ($action != 'none')) {
+    if ($action && ($action != 'comment') && ($action != 'none') && ($action != 'pull_request')) {
       $xactions[] = id(new DifferentialTransaction())
         ->setTransactionType(DifferentialTransaction::TYPE_ACTION)
         ->setNewValue($action);
