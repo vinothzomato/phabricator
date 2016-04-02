@@ -49,7 +49,7 @@ extends Phobject {
 		return curl_exec($ch);
 	}
 
-	private function executeCurlPutRequest($url, $postData=array()){
+	private function executeCurlPutRequest($url){
 		$ch = curl_init($url);
 		curl_setopt_array($ch, array(
 			CURLOPT_CUSTOMREQUEST => "PUT",
@@ -59,7 +59,7 @@ extends Phobject {
 				'User-Agent: Zomato-Phabricator',
 				'Content-Type: application/json'
 				),
-			CURLOPT_POSTFIELDS => json_encode($postData)
+			CURLOPT_POSTFIELDS => '{"commit_message":"Merged from zomato phabricator"}'
 			));
 
 		return curl_exec($ch);
