@@ -525,16 +525,16 @@ final class DifferentialTransactionEditor
                   $actorGithubUser->setRepo($repo);
                   $mergeJson = $actorGithubUser->mergePullRequest($pullResult['url']);
                   $mergeResult = json_decode($mergeJson, true);
-                  if (isset($pullResult['merged']) && $pullResult['merged']) {
+                  if (isset($mergeResult['merged']) && $mergeResult['merged']) {
                     $results[] = id(new DifferentialTransaction())
                     ->setTransactionType(PhabricatorTransactions::TYPE_COMMENT)
                     ->attachComment(
                       id(new DifferentialTransactionComment())
-                      ->setContent($pullResult['message']));
+                      ->setContent($mergeResult['message']));
                   }
                   else{
                     $results[] = id(new DifferentialTransaction())
-                    ->setTransactionType(PhabricatorTransactions::TYPE_PULL_REQUEST)
+                    ->setTransactionType(PhabricatorTransactions::TYPE_COMMENT)
                     ->attachComment(
                       id(new DifferentialTransactionComment())
                       ->setContent("Pull request cannot be merged. Message:".$mergeResult['message']));
@@ -542,7 +542,7 @@ final class DifferentialTransactionEditor
                 }
                 else{
                   $results[] = id(new DifferentialTransaction())
-                 ->setTransactionType(PhabricatorTransactions::TYPE_PULL_REQUEST)
+                 ->setTransactionType(PhabricatorTransactions::TYPE_COMMENT)
                  ->attachComment(
                   id(new DifferentialTransactionComment())
                   ->setContent("Pull request cannot be created. Message:".$pullResult['message']));
