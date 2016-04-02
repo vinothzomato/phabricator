@@ -15,7 +15,7 @@ extends Phobject {
 				pht('Title, Base and Head are required to create pull request'));
 		}
 
-		$url = $baseApiURL.$username.'/'.$repo.'/pulls';
+		$url = $this->baseApiURL.$this->username.'/'.$this->repo.'/pulls';
 		$postData = array(
 			'title' => $title,
 			'head' => $base,
@@ -30,7 +30,7 @@ extends Phobject {
 			CURLOPT_POST => TRUE,
 			CURLOPT_RETURNTRANSFER => TRUE,
 			CURLOPT_HTTPHEADER => array(
-				'Authorization: token '.$token,
+				'Authorization: token '.$this->token,
 				'Content-Type: application/json'
 				),
 			CURLOPT_POSTFIELDS => json_encode($postData)
@@ -45,7 +45,7 @@ extends Phobject {
 			CURLOPT_CUSTOMREQUEST => "PUT",
 			CURLOPT_RETURNTRANSFER => TRUE,
 			CURLOPT_HTTPHEADER => array(
-				'Authorization: token '.$token,
+				'Authorization: token '.$this->token,
 				'Content-Type: application/json'
 				),
 			CURLOPT_POSTFIELDS => json_encode($postData)
@@ -59,7 +59,7 @@ extends Phobject {
 		curl_setopt_array($ch, array(
 			CURLOPT_RETURNTRANSFER => TRUE,
 			CURLOPT_HTTPHEADER => array(
-				'Authorization: token '.$token,
+				'Authorization: token '.$this->token,
 				'Content-Type: application/json'
 				),
 			));
