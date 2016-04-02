@@ -15,8 +15,7 @@ extends Phobject {
 				pht('Title, Base and Head are required to create pull request'));
 		}
 
-		$url = $this->baseApiURL.$this->username.'/'.$this->repo.'/pulls';
-		var_dump($url);
+		$url = $this->baseApiURL.'/repos/'.$this->username.'/'.$this->repo.'/pulls';
 		$postData = array(
 			'title' => $title,
 			'head' => $base,
