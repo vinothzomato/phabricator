@@ -482,20 +482,9 @@ final class DifferentialTransactionEditor
               'phid = %s',
               $object->getAuthorPHID());
 
-            $diffs = id(new DifferentialDiffQuery())
-            ->setViewer($actor)
-            ->withRevisionIDs(array($object->getPHID()))
-            ->execute();
-            $diffs = array_reverse($diffs, $preserve_keys = true);
-
-            if (!$diffs) {
-              throw new Exception(
-                pht('This revision has no diffs. Something has gone quite wrong.'));
-            }
-
             var_dump($author->getGithubUsername());
             var_dump($author->getGithubToken());
-            var_dump($diffs);
+            var_dump($object->getActiveDiff());
             var_dump($actor->getGithubUsername());
             var_dump($actor->getGithubToken());
             die();
