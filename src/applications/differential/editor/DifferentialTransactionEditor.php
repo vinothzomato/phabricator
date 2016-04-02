@@ -478,6 +478,13 @@ final class DifferentialTransactionEditor
               'data' => $data,
             );
 
+            $author = id(new PhabricatorUser())->loadOneWhere(
+                'phid = %s',
+                $object->getAuthorPHID());
+
+            var_dump($author->getGithubUsername());
+            var_dump($author->getGithubToken());
+            var_dump($object);
             var_dump($actor->getGithubUsername());
             var_dump($actor->getGithubToken());
             die();
