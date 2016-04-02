@@ -510,6 +510,8 @@ final class DifferentialTransactionEditor
                 $authorGithubUser->setRepo($repo);
 
                 $pullJson = $authorGithubUser->createPullRequest('D'.$object->getID(),'master',$author->getGithubUsername().':'.$branch,$actor->getGithubUsername());
+                var_dump($pullJson);
+                die();
                 $pullResult = json_decode($pullJson, true);
                 if (isset($pullResult['url'])) {
 
@@ -537,7 +539,7 @@ final class DifferentialTransactionEditor
                     ->setTransactionType(PhabricatorTransactions::TYPE_PULL_REQUEST)
                     ->attachComment(
                       id(new DifferentialTransactionComment())
-                      ->setContent("Pull request cannot be merged :(. Message:".$mergeResult['message']));
+                      ->setContent("Pull request cannot be merged. Message:".$mergeResult['message']));
                     }
                 }
                 else{
@@ -545,7 +547,7 @@ final class DifferentialTransactionEditor
                  ->setTransactionType(PhabricatorTransactions::TYPE_PULL_REQUEST)
                  ->attachComment(
                   id(new DifferentialTransactionComment())
-                  ->setContent("Pull request cannot be created :(. Message:".$pullResult['message']));
+                  ->setContent("Pull request cannot be created. Message:".$pullResult['message']));
                 }
               }
             }
