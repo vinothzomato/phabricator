@@ -16,6 +16,7 @@ extends Phobject {
 		}
 
 		$url = $this->baseApiURL.$this->username.'/'.$this->repo.'/pulls';
+		var_dump($url);
 		$postData = array(
 			'title' => $title,
 			'head' => $base,
