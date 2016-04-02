@@ -514,16 +514,9 @@ final class DifferentialTransactionEditor
                 $actorGithubUser->setToken($actor->getGithubToken());
                 $actorGithubUser->setRepo($repo);
 
-                var_dump($authorGithubUser);
-                var_dump($actorGithubUser);
               }
 
-              var_dump($repo);
               var_dump($branch);
-              var_dump($author->getGithubUsername());
-              var_dump($author->getGithubToken());
-              var_dump($actor->getGithubUsername());
-              var_dump($actor->getGithubToken());
               die();
             }
             throw new Exception(
