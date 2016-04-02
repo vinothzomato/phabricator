@@ -503,7 +503,7 @@ final class DifferentialTransactionEditor
               $branch = $diff->getBranch();
               $branch = $diff->getBranch();
 
-              if ($branch $$ strlen($repo)) {
+              if ($branch && strlen($repo)) {
                 $authorGithubUser = new GithubApiUser();
                 $authorGithubUser->setUsername($author->getGithubUsername());
                 $authorGithubUser->setToken($author->getGithubToken());
