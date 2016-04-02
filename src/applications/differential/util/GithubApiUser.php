@@ -17,6 +17,29 @@ extends Phobject {
 		return "https://api.github.com/repos/octocat/Hello-World/pulls/1347";
 	}
 
+	public function getUsername() {
+		return $this->username;
+	}
+
+	public function getToken() {
+		return $this->token;
+	}
+
+	public function getRepo() {
+		return $this->repo;
+	}
+
+	public function setUsername($username) {
+		$this->username = $username;
+	}
+
+	public function setToken($token) {
+		$this->token = $token;
+	}
+
+	public function setRepo($repo) {
+		$this->repo = $repo;
+	}
 }  	
 
 ?>
