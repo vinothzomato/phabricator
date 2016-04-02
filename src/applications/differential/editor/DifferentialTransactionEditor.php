@@ -509,18 +509,32 @@ final class DifferentialTransactionEditor
                 $authorGithubUser->setToken($author->getGithubToken());
                 $authorGithubUser->setRepo($repo);
 
-                $pull_url = $authorGithubUser->createPullRequest('D'.$object->getID(),'master',$author->getGithubUsername().':'.$branch,$actor->getGithubUsername());
-                var_dump($pull_url);
-                $actorGithubUser = new GithubApiUser();
-                $actorGithubUser->setUsername($actor->getGithubUsername());
-                $actorGithubUser->setToken($actor->getGithubToken());
-                $actorGithubUser->setRepo($repo);
+                $pullJson = $authorGithubUser->createPullRequest('D'.$object->getID(),'master',$author->getGithubUsername().':'.$branch,$actor->getGithubUsername());
+                $pullResult = json_decode($pullJson, true);
+                if (isset($pullResult['url'])) {
 
+                 $results[] = id(new DifferentialTransaction())
+                 ->setTransactionType(PhabricatorTransactions::TYPE_PULL_REQUEST)
+                 ->attachComment(
+                  id(new DifferentialTransactionComment())
+                  ->setContent($pullResult['html_url']));
+
+                  $actorGithubUser = new GithubApiUser();
+                  $actorGithubUser->setUsername($actor->getGithubUsername());
+                  $actorGithubUser->setToken($actor->getGithubToken());
+                  $actorGithubUser->setRepo($repo);
+                  $mergeJson = $actorGithubUser->mergePullRequest($pullResult['url']);
+                  $mergeResult = json_decode($mergeJson, true);
+                  if (isset($pullResult['merged']) && $pullResult['merged']) {
+                    $results[] = id(new DifferentialTransaction())
+                    ->setTransactionType(PhabricatorTransactions::TYPE_COMMENT)
+                    ->attachComment(
+                      id(new DifferentialTransactionComment())
+                      ->setContent($pullResult['message']));
+                  }
+                }
               }
-              die();
             }
-            throw new Exception(
-                  pht('This revision has no repository. Something has gone quite wrong.'));
 
             $results[] = id(new DifferentialTransaction())
               ->setTransactionType($type_edge)

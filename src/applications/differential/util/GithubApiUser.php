@@ -16,16 +16,21 @@ extends Phobject {
 		}
 
 		$url = $this->baseApiURL.'repos/'.$user.'/'.$this->repo.'/pulls';
-		var_dump($url);
-		var_dump($head);
-		var_dump($base);
-		var_dump($head);
 		$postData = array(
 			'title' => $title,
 			'head' => $head,
 			'base' => $base
 			);
 		return $this->executeCurlPostRequest($url,$postData);
+	}
+
+	public function mergePullRequest($pullRequestUrl){
+		if (!$pullRequestUrl) {
+			throw new Exception(
+				pht('Pull rquest url is required to merge'));
+		}
+		$url = $pullRequestUrl.'/merge';
+		return $this->executeCurlPutRequest($url);
 	}
 
 	private function executeCurlPostRequest($url, $postData){
@@ -44,7 +49,7 @@ extends Phobject {
 		return curl_exec($ch);
 	}
 
-	private function executeCurlPutRequest($url, $postData){
+	private function executeCurlPutRequest($url){
 		$ch = curl_init($url);
 		curl_setopt_array($ch, array(
 			CURLOPT_CUSTOMREQUEST => "PUT",
@@ -53,8 +58,7 @@ extends Phobject {
 				'Authorization: token '.$this->token,
 				'User-Agent: Zomato-Phabricator',
 				'Content-Type: application/json'
-				),
-			CURLOPT_POSTFIELDS => json_encode($postData)
+				)
 			));
 
 		return curl_exec($ch);
@@ -72,14 +76,6 @@ extends Phobject {
 			));
 
 		return curl_exec($ch);
-	}
-
-	public function mergePullRequest($id){
-		if (!$id) {
-			throw new Exception(
-				pht('Base and Head are required to create pull request'));
-		}
-		return "successful";
 	}
 
 	public function getUsername() {
