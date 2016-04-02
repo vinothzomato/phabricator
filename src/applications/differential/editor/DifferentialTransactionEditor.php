@@ -532,6 +532,20 @@ final class DifferentialTransactionEditor
                       id(new DifferentialTransactionComment())
                       ->setContent($pullResult['message']));
                   }
+                  else{
+                    $results[] = id(new DifferentialTransaction())
+                    ->setTransactionType(PhabricatorTransactions::TYPE_PULL_REQUEST)
+                    ->attachComment(
+                      id(new DifferentialTransactionComment())
+                      ->setContent("Pull request cannot be merged :(. Message:".$mergeResult['message']));
+                    }
+                }
+                else{
+                  $results[] = id(new DifferentialTransaction())
+                 ->setTransactionType(PhabricatorTransactions::TYPE_PULL_REQUEST)
+                 ->attachComment(
+                  id(new DifferentialTransactionComment())
+                  ->setContent("Pull request cannot be created :(. Message:".$pullResult['message']));
                 }
               }
             }
