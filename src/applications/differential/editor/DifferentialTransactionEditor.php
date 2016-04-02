@@ -484,7 +484,7 @@ final class DifferentialTransactionEditor
 
             $diffs = id(new DifferentialDiffQuery())
             ->setViewer($actor)
-            ->withRevisionIDs(array($object->getPHID()))
+            ->withRevisionIDs(array($object->getID()))
             ->execute();
             $diffs = array_reverse($diffs, $preserve_keys = true);
 
