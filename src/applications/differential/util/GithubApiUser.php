@@ -19,11 +19,11 @@ extends Phobject {
 		var_dump($url);
 		var_dump($head);
 		var_dump($base);
-		var_dump($title);
+		var_dump($head);
 		$postData = array(
 			'title' => $title,
-			'head' => $base,
-			'base' => $head
+			'head' => $head,
+			'base' => $base
 			);
 		return $this->executeCurlPostRequest($url,$postData);
 	}
