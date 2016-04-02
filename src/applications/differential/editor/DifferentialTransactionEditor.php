@@ -510,8 +510,6 @@ final class DifferentialTransactionEditor
                 $authorGithubUser->setRepo($repo);
 
                 $pullJson = $authorGithubUser->createPullRequest('D'.$object->getID(),'master',$author->getGithubUsername().':'.$branch,$actor->getGithubUsername());
-                var_dump($pullJson);
-                die();
                 $pullResult = json_decode($pullJson, true);
                 if (isset($pullResult['url'])) {
 
