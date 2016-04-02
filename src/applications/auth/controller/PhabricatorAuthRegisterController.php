@@ -36,7 +36,7 @@ final class PhabricatorAuthRegisterController
     $adapter = $provider->getAdapter();
     if ($provider && $adapter && $adapter->getAdapterType() == 'github') {
       $githubUsername = $account->getUsername();
-      $githubToken = $account->getAccessToken();
+      $githubToken = $provider->getOAuthAccessToken($account);
     }
 
     $invite = $this->loadInvite();

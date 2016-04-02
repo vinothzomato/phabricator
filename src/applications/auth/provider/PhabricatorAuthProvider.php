@@ -230,10 +230,6 @@ abstract class PhabricatorAuthProvider extends Phobject {
     $account->setRealName($adapter->getAccountRealName());
     $account->setEmail($adapter->getAccountEmail());
     $account->setAccountURI($adapter->getAccountURI());
-    if (method_exists($this,'getOAuthAccessToken')){
-      $account->setAccessToken($this->getOAuthAccessToken($account));
-      error_log('access token'.$account->getAccessToken());
-    }
 
     $account->setProfileImagePHID(null);
     $image_uri = $adapter->getAccountImageURI();
