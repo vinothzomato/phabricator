@@ -509,7 +509,7 @@ final class DifferentialTransactionEditor
                 $authorGithubUser->setToken($author->getGithubToken());
                 $authorGithubUser->setRepo($repo);
 
-                $pull_url = $authorGithubUser->createPullRequest('D'.$object->getID(),$actor->getGithubUsername().':master',$author->getGithubUsername().':'.$branch);
+                $pull_url = $authorGithubUser->createPullRequest('D'.$object->getID(),$actor->getGithubUsername().':master',$author->getGithubUsername().':'.$branch,$actor->getGithubUsername());
                 var_dump($pull_url);
                 $actorGithubUser = new GithubApiUser();
                 $actorGithubUser->setUsername($actor->getGithubUsername());
