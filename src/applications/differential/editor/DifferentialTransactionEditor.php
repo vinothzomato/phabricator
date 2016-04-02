@@ -482,25 +482,52 @@ final class DifferentialTransactionEditor
               'phid = %s',
               $object->getAuthorPHID());
 
-            $diffs = id(new DifferentialDiffQuery())
-            ->setViewer($actor)
-            ->withRevisionIDs(array($object->getID()))
-            ->execute();
-            $diffs = array_reverse($diffs, $preserve_keys = true);
+            $repository = $object->getRepository();
 
-            if (!$diffs) {
-              throw new Exception(
-                pht('This revision has no diffs. Something has gone quite wrong.'));
+            if ($repository) {
+
+              $repo = str_replace('.git','',basename($repository->getRemoteURI()));
+
+              $diffs = id(new DifferentialDiffQuery())
+              ->setViewer($actor)
+              ->withRevisionIDs(array($object->getID()))
+              ->execute();
+              $diffs = array_reverse($diffs, $preserve_keys = true);
+
+              if (!$diffs) {
+                throw new Exception(
+                  pht('This revision has no diffs. Something has gone quite wrong.'));
+              }
+
+              $diff = last($diffs);
+              $branch = $diff->getBranch();
+              $branch = $diff->getBranch();
+
+              if ($branch $$ strlen($repo)) {
+                $authorGithubUser = new GithubApiUser();
+                $authorGithubUser->setUsername($author->getGithubUsername());
+                $authorGithubUser->setToken($author->getGithubToken());
+                $authorGithubUser->setRepo($repo);
+
+                $actorGithubUser = new GithubApiUser();
+                $actorGithubUser->setUsername($actor->getGithubUsername());
+                $actorGithubUser->setToken($actor->getGithubToken());
+                $actorGithubUser->setRepo($repo);
+
+                var_dump($authorGithubUser);
+                var_dump($actorGithubUser);
+              }
+
+              var_dump($repo);
+              var_dump($branch);
+              var_dump($author->getGithubUsername());
+              var_dump($author->getGithubToken());
+              var_dump($actor->getGithubUsername());
+              var_dump($actor->getGithubToken());
+              die();
             }
-
-            $diff = last($diffs);
-
-            var_dump($diff);
-            var_dump($author->getGithubUsername());
-            var_dump($author->getGithubToken());
-            var_dump($actor->getGithubUsername());
-            var_dump($actor->getGithubToken());
-            die();
+            throw new Exception(
+                  pht('This revision has no repository. Something has gone quite wrong.'));
 
             $results[] = id(new DifferentialTransaction())
               ->setTransactionType($type_edge)
