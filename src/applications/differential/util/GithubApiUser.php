@@ -21,7 +21,7 @@ extends Phobject {
 			'head' => $base,
 			'base' => $head
 			);
-		return $this->executeCurlRequest($url,$postData);
+		return $this->executeCurlPostRequest($url,$postData);
 	}
 
 	private function executeCurlPostRequest($url, $postData){
