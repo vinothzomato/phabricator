@@ -49,7 +49,7 @@ extends Phobject {
 		return curl_exec($ch);
 	}
 
-	private function executeCurlPutRequest($url){
+	private function executeCurlPutRequest($url, $postData=array()){
 		$ch = curl_init($url);
 		curl_setopt_array($ch, array(
 			CURLOPT_CUSTOMREQUEST => "PUT",
@@ -58,7 +58,8 @@ extends Phobject {
 				'Authorization: token '.$this->token,
 				'User-Agent: Zomato-Phabricator',
 				'Content-Type: application/json'
-				)
+				),
+			CURLOPT_POSTFIELDS => json_encode($postData)
 			));
 
 		return curl_exec($ch);
