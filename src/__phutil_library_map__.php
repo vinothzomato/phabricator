@@ -1039,7 +1039,7 @@ phutil_register_library_map(array(
     'FundInitiativeTransactionQuery' => 'applications/fund/query/FundInitiativeTransactionQuery.php',
     'FundInitiativeViewController' => 'applications/fund/controller/FundInitiativeViewController.php',
     'FundSchemaSpec' => 'applications/fund/storage/FundSchemaSpec.php',
-    'GithubApiUser' => 'applications/differential/util/GithubApiUser.php'
+    'GithubApiUser' => 'applications/differential/util/GithubApiUser.php',
     'HarbormasterArcLintBuildStepImplementation' => 'applications/harbormaster/step/HarbormasterArcLintBuildStepImplementation.php',
     'HarbormasterArcUnitBuildStepImplementation' => 'applications/harbormaster/step/HarbormasterArcUnitBuildStepImplementation.php',
     'HarbormasterArtifact' => 'applications/harbormaster/artifact/HarbormasterArtifact.php',
@@ -5258,7 +5258,7 @@ phutil_register_library_map(array(
     'FundInitiativeTransactionQuery' => 'PhabricatorApplicationTransactionQuery',
     'FundInitiativeViewController' => 'FundController',
     'FundSchemaSpec' => 'PhabricatorConfigSchemaSpec',
-    'GithubApiUser' => 'GithubApiUser',
+    'GithubApiUser' => 'Phobject',
     'HarbormasterArcLintBuildStepImplementation' => 'HarbormasterBuildStepImplementation',
     'HarbormasterArcUnitBuildStepImplementation' => 'HarbormasterBuildStepImplementation',
     'HarbormasterArtifact' => 'Phobject',
