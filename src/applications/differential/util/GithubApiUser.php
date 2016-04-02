@@ -9,12 +9,62 @@ extends Phobject {
 
 	protected $baseApiURL = "https://api.github.com/";
 
-	public function createPullRequest($base,$head){
-		if (!$base || !$head) {
+	public function createPullRequest($title,$base,$head){
+		if (!$title || !$base || !$head) {
 			throw new Exception(
-				pht('Base and Head are required to create pull request'));
+				pht('Title, Base and Head are required to create pull request'));
 		}
-		return "https://api.github.com/repos/octocat/Hello-World/pulls/1347";
+
+		$url = $baseApiURL.$username.'/'.$repo.'/pulls';
+		$postData = array(
+			'title' => $title,
+			'head' => $base,
+			'base' => $head
+			);
+		return $this->executeCurlRequest($url,$postData);
+	}
+
+	private function executeCurlPostRequest($url, $postData){
+		$ch = curl_init($url);
+		curl_setopt_array($ch, array(
+			CURLOPT_POST => TRUE,
+			CURLOPT_RETURNTRANSFER => TRUE,
+			CURLOPT_HTTPHEADER => array(
+				'Authorization: token '.$token,
+				'Content-Type: application/json'
+				),
+			CURLOPT_POSTFIELDS => json_encode($postData)
+			));
+
+		return curl_exec($ch);
+	}
+
+	private function executeCurlPutRequest($url, $postData){
+		$ch = curl_init($url);
+		curl_setopt_array($ch, array(
+			CURLOPT_CUSTOMREQUEST => "PUT",
+			CURLOPT_RETURNTRANSFER => TRUE,
+			CURLOPT_HTTPHEADER => array(
+				'Authorization: token '.$token,
+				'Content-Type: application/json'
+				),
+			CURLOPT_POSTFIELDS => json_encode($postData)
+			));
+
+		return curl_exec($ch);
+	}
+
+	private function executeCurlGetRequest($url){
+		$ch = curl_init($url);
+		curl_setopt_array($ch, array(
+			CURLOPT_RETURNTRANSFER => TRUE,
+			CURLOPT_HTTPHEADER => array(
+				'Authorization: token '.$token,
+				'Content-Type: application/json'
+				),
+			));
+
+		return curl_exec($ch);
 	}
 
 	public function mergePullRequest($id){
