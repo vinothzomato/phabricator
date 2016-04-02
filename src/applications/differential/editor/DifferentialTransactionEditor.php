@@ -484,7 +484,7 @@ final class DifferentialTransactionEditor
 
             var_dump($author->getGithubUsername());
             var_dump($author->getGithubToken());
-            var_dump($object->getCommits());
+            var_dump($object->getCommitPHIDs());
             var_dump($object->getDiffIDs());
             var_dump($actor->getGithubUsername());
             var_dump($actor->getGithubToken());
