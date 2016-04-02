@@ -3,9 +3,9 @@
 final class GithubApiUser
 extends Phobject {
 
-	public $username;
-	public $token;
-	public $repo;
+	protected $username;
+	protected $token;
+	protected $repo;
 
 	protected $baseApiURL = "https://api.github.com/";
 
