@@ -525,6 +525,7 @@ final class DifferentialTransactionEditor
                   $actorGithubUser->setRepo($repo);
                   $mergeJson = $actorGithubUser->mergePullRequest($pullResult['url']);
                   $mergeResult = json_decode($mergeJson, true);
+                  var_dump($mergeJson);
                   if (isset($pullResult['merged']) && $pullResult['merged']) {
                     $results[] = id(new DifferentialTransaction())
                     ->setTransactionType(PhabricatorTransactions::TYPE_COMMENT)
@@ -535,6 +536,7 @@ final class DifferentialTransactionEditor
                 }
               }
             }
+            die();
 
             $results[] = id(new DifferentialTransaction())
               ->setTransactionType($type_edge)
