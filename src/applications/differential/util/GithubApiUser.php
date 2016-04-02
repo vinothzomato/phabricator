@@ -31,6 +31,7 @@ extends Phobject {
 			CURLOPT_RETURNTRANSFER => TRUE,
 			CURLOPT_HTTPHEADER => array(
 				'Authorization: token '.$this->token,
+				'User-Agent: Zomato-Phabricator',
 				'Content-Type: application/json'
 				),
 			CURLOPT_POSTFIELDS => json_encode($postData)
@@ -46,6 +47,7 @@ extends Phobject {
 			CURLOPT_RETURNTRANSFER => TRUE,
 			CURLOPT_HTTPHEADER => array(
 				'Authorization: token '.$this->token,
+				'User-Agent: Zomato-Phabricator',
 				'Content-Type: application/json'
 				),
 			CURLOPT_POSTFIELDS => json_encode($postData)
@@ -60,6 +62,7 @@ extends Phobject {
 			CURLOPT_RETURNTRANSFER => TRUE,
 			CURLOPT_HTTPHEADER => array(
 				'Authorization: token '.$this->token,
+				'User-Agent: Zomato-Phabricator',
 				'Content-Type: application/json'
 				),
 			));
