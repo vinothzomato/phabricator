@@ -30,23 +30,23 @@ final class PhabricatorUserGithubTokenField
   }
 
   public function readValueFromObject(PhabricatorCustomFieldInterface $object) {
-    $this->value = $object->getGithubToken();
+    $this->value = $object->getGithubAccessToken();
   }
 
   public function getOldValueForApplicationTransactions() {
-    return $this->getObject()->getGithubToken();
+    return $this->getObject()->getGithubAccessToken();
   }
 
   public function getNewValueForApplicationTransactions() {
     if (!$this->isEditable()) {
-      return $this->getObject()->getGithubToken();
+      return $this->getObject()->getGithubAccessToken();
     }
     return $this->value;
   }
 
   public function applyApplicationTransactionInternalEffects(
     PhabricatorApplicationTransaction $xaction) {
-    $this->getObject()->setGithubToken($xaction->getNewValue());
+    //$this->getObject()->setGithubToken($xaction->getNewValue());
   }
 
   public function readValueFromRequest(AphrontRequest $request) {
@@ -62,7 +62,7 @@ final class PhabricatorUserGithubTokenField
   }
 
   private function isEditable() {
-    return false;//PhabricatorEnv::getEnvConfig('account.editable');
+    return false;
   }
 
 }

@@ -34,11 +34,6 @@ final class PhabricatorAuthRegisterController
     }
 
     $adapter = $provider->getAdapter();
-    if ($provider && $adapter && $adapter->getAdapterType() == 'github') {
-      $githubUsername = $account->getUsername();
-      $githubToken = $provider->getOAuthAccessToken($account);
-    }
-
     $invite = $this->loadInvite();
 
     if (!$provider->shouldAllowRegistration()) {
@@ -61,11 +56,6 @@ final class PhabricatorAuthRegisterController
     }
 
     $user = new PhabricatorUser();
-
-    if ($provider && $adapter && $adapter->getAdapterType() == 'github') {
-      $user->setGithubToken($githubToken);
-      $user->setGithubUsername($githubUsername);
-    }
 
     $default_username = $account->getUsername();
     $default_realname = $account->getRealName();

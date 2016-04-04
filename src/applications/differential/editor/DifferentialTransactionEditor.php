@@ -506,7 +506,7 @@ final class DifferentialTransactionEditor
               if ($branch && strlen($repo)) {
                 $authorGithubUser = new GithubApiUser();
                 $authorGithubUser->setUsername($author->getGithubUsername());
-                $authorGithubUser->setToken($author->getGithubToken());
+                $authorGithubUser->setToken($author->getGithubAccessToken());
                 $authorGithubUser->setRepo($repo);
 
                 $pullJson = $authorGithubUser->createPullRequest('D'.$object->getID(),'master',$author->getGithubUsername().':'.$branch,$actor->getGithubUsername());
@@ -521,7 +521,7 @@ final class DifferentialTransactionEditor
 
                   $actorGithubUser = new GithubApiUser();
                   $actorGithubUser->setUsername($actor->getGithubUsername());
-                  $actorGithubUser->setToken($actor->getGithubToken());
+                  $actorGithubUser->setToken($actor->getGithubAccessToken());
                   $actorGithubUser->setRepo($repo);
                   $mergeJson = $actorGithubUser->mergePullRequest($pullResult['url']);
                   $mergeResult = json_decode($mergeJson, true);

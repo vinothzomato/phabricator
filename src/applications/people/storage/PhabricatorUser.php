@@ -33,8 +33,6 @@ final class PhabricatorUser
   protected $availabilityCache;
   protected $availabilityCacheTTL;
   protected $timezoneIdentifier = '';
-  protected $githubToken;
-  protected $githubUsername;
 
   protected $consoleEnabled = 0;
   protected $consoleVisible = 0;
@@ -197,8 +195,6 @@ final class PhabricatorUser
         'profileImageCache' => 'text255?',
         'availabilityCache' => 'text255?',
         'availabilityCacheTTL' => 'uint32?',
-        'githubToken' => 'text255?',
-        'githubUsername' => 'text255?',
       ),
       self::CONFIG_KEY_SCHEMA => array(
         'key_phid' => null,
@@ -906,7 +902,47 @@ final class PhabricatorUser
    * @return string|null 
    */
   public function getGithubAccessToken() {
-    return $this->githubToken;
+    $provider = self::getGithubProvider();
+    $account = $this->getGithubAccount();
+    return $provider->getOAuthAccessToken($account);
+  }
+
+  /**
+   * Get this user's github username.
+   *
+   * @return string|null 
+   */
+  public function getGithubUsername() {
+    $account = $this->getGithubAccount();
+    return $account->getUsername();
+  }
+
+  /**
+   * Get github provider.
+   *
+   * @return PhabricatorAuthProvider|null 
+   */
+  public static function getGithubProvider() {
+    return PhabricatorAuthProvider::getEnabledProviderByKey(
+      "github:github.com");
+  }
+
+  /**
+   * Get this user's github account.
+   *
+   * @return PhabricatorExternalAccount|null 
+   */
+  public function getGithubAccount() {
+    $provider = self::getGithubProvider();
+    if (!$provider) {
+      throw new Exception(pht("Github provider is not found"));
+    }
+    $account = id(new PhabricatorExternalAccount())->loadOneWhere(
+      'accountType = %s AND accountDomain = %s AND userPHID = %s',
+      $provider->getProviderType(),
+      $provider->getProviderDomain(),
+      $this->getPHID());
+    return $account;
   }
 
 

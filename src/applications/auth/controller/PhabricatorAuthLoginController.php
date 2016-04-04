@@ -71,34 +71,12 @@ final class PhabricatorAuthLoginController
     }
 
     $adapter = $provider->getAdapter();
-    if ($provider && $adapter && $adapter->getAdapterType() == 'github') {
-      $githubUsername = $adapter->getAccountName();
-      $githubToken = $provider->getOAuthAccessToken($account);
-    }
 
     if ($account->getUserPHID()) {
       // The account is already attached to a Phabricator user, so this is
       // either a login or a bad account link request.
       if (!$viewer->isLoggedIn()) {
         if ($provider->shouldAllowLogin()) {
-          if ($provider && $adapter && $adapter->getAdapterType() == 'github') {
-            $user = id(new PhabricatorUser())->loadOneWhere(
-                'phid = %s',
-                $account->getUserPHID());
-            if (!$user) {
-              return $this->renderError(
-                pht(
-                'The external account you just logged in with is not associated '.
-                'with a valid Phabricator user.'));
-            }
-            $user->setGithubToken($githubToken);
-            $user->setGithubUsername($githubUsername);
-            $request_data = $request->getRequestData();
-            $request_data['__csrf__'] = $request->getUser()->getCSRFToken();
-            $request->setRequestData($request_data);
-            $user->save();
-            return $this->loginUser($user);
-          }
           return $this->processLoginUser($account);
         } else {
           return $this->renderError(

@@ -62,7 +62,7 @@ final class PhabricatorUserGithubUsernameField
   }
 
   private function isEditable() {
-    return false;//return PhabricatorEnv::getEnvConfig('account.editable');
+    return false;
   }
 
 }
