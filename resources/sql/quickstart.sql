@@ -3038,6 +3038,7 @@ CREATE TABLE `user` (
   `dateCreated` int(10) unsigned NOT NULL,
   `dateModified` int(10) unsigned NOT NULL,
   `profileImagePHID` varbinary(64) DEFAULT NULL,
+  `reviewerPHID` varbinary(64) DEFAULT NULL,
   `consoleEnabled` tinyint(1) NOT NULL,
   `consoleVisible` tinyint(1) NOT NULL,
   `consoleTab` varchar(64) COLLATE {$COLLATE_TEXT} NOT NULL,
@@ -3059,6 +3060,7 @@ CREATE TABLE `user` (
   UNIQUE KEY `phid` (`phid`),
   KEY `realName` (`realName`),
   KEY `key_approved` (`isApproved`)
+  KEY `key_reviewer` (`reviewerPHID`)
 ) ENGINE=InnoDB DEFAULT CHARSET={$CHARSET} COLLATE={$COLLATE_TEXT};
 
 CREATE TABLE `user_authinvite` (

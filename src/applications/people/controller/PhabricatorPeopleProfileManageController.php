@@ -134,6 +134,22 @@ final class PhabricatorPeopleProfileManageController
       $empower_name = pht('Make Administrator');
     }
 
+    if ($user->getReviewerPHID() === $viewer->getPHID()) {
+      $reviewer_icon = 'fa-cog';
+      $reviewer_name = pht('Remove from Review');
+    } else {
+      $reviewer_icon = 'fa-cog';
+      $reviewer_name = pht('Add to Review');
+    }
+
+    $curtain->addAction(
+      id(new PhabricatorActionView())
+        ->setIcon($reviewer_icon)
+        ->setName($reviewer_name)
+        ->setDisabled($can_edit)
+        ->setWorkflow(true)
+        ->setHref($this->getApplicationURI('reviewer/'.$user->getID().'/')));
+
     $is_admin = $viewer->getIsAdmin();
     $is_self = ($user->getPHID() === $viewer->getPHID());
     $can_admin = ($is_admin && !$is_self);

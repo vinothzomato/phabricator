@@ -15,6 +15,7 @@ final class PhabricatorPeopleQuery
   private $isMailingList;
   private $isDisabled;
   private $isApproved;
+  private $reviewerPHID;
   private $nameLike;
   private $nameTokens;
 
@@ -61,6 +62,11 @@ final class PhabricatorPeopleQuery
 
   public function withIsAdmin($admin) {
     $this->isAdmin = $admin;
+    return $this;
+  }
+
+  public function withReviewerPHID($reviewerPHID) {
+    $this->reviewerPHID = $reviewerPHID;
     return $this;
   }
 
@@ -306,6 +312,13 @@ final class PhabricatorPeopleQuery
         $conn,
         'user.phid IN (%Ls)',
         $this->phids);
+    }
+
+    if ($this->reviewerPHID !== null) {
+      $where[] = qsprintf(
+        $conn,
+        'user.reviewerPHID IN (%Ls)',
+        $this->reviewerPHID);
     }
 
     if ($this->ids !== null) {

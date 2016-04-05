@@ -54,6 +54,7 @@ final class PhabricatorPeopleApplication extends PhabricatorApplication {
         'empower/(?P<id>[1-9]\d*)/' => 'PhabricatorPeopleEmpowerController',
         'delete/(?P<id>[1-9]\d*)/' => 'PhabricatorPeopleDeleteController',
         'rename/(?P<id>[1-9]\d*)/' => 'PhabricatorPeopleRenameController',
+        'reviewer/(?P<id>[1-9]\d*)/' => 'PhabricatorPeopleReviewerController',
         'welcome/(?P<id>[1-9]\d*)/' => 'PhabricatorPeopleWelcomeController',
         'create/' => 'PhabricatorPeopleCreateController',
         'new/(?P<type>[^/]+)/' => 'PhabricatorPeopleNewController',

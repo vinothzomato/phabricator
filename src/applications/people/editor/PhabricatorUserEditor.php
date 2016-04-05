@@ -198,6 +198,35 @@ final class PhabricatorUserEditor extends PhabricatorEditor {
     $user->sendUsernameChangeEmail($actor, $old_username);
   }
 
+  /**
+   * @task changeReviewer
+   */
+  public function changeReviewer(PhabricatorUser $user, $reviewerPHID) {
+    $actor = $this->requireActor();
+
+    if (!$user->getID()) {
+      throw new Exception(pht('User has not been created yet!'));
+    }
+
+    $old_reviewerPHID = $user->getReviewerPHID();
+    
+    $user->openTransaction();
+      $user->reload();
+      $user->setReviewerPHID($reviewerPHID);
+
+      $user->save();
+
+      $log = PhabricatorUserLog::initializeNewLog(
+        $actor,
+        $user->getPHID(),
+        PhabricatorUserLog::ACTION_CHANGE_REVIEWER);
+      $log->setOldValue($old_reviewerPHID);
+      $log->setNewValue($reviewerPHID);
+      $log->save();
+
+    $user->saveTransaction();
+  }
+
 
 /* -(  Editing Roles  )------------------------------------------------------ */
 

@@ -61,12 +61,19 @@ final class PhabricatorPeopleSearchEngine
           pht('(Show All)'),
           pht('Show Only Unapproved Users'),
           pht('Hide Unappproved Users')),
+      id(new PhabricatorUsersSearchField())
+        ->setAliases(array('reviewer'))
+        ->setKey('reviewerPHID')
+        ->setConduitKey('reviewer')
+        ->setLabel(pht('Reviewer'))
+        ->setDescription(
+          pht('Search for pastes with specific reviewer.')),  
       id(new PhabricatorSearchDateField())
         ->setKey('createdStart')
         ->setLabel(pht('Joined After')),
       id(new PhabricatorSearchDateField())
         ->setKey('createdEnd')
-        ->setLabel(pht('Joined Before')),
+        ->setLabel(pht('Joined Before')), 
     );
   }
 
@@ -122,6 +129,10 @@ final class PhabricatorPeopleSearchEngine
     if ($map['needsApproval'] !== null) {
       $query->withIsApproved(!$map['needsApproval']);
     }
+    
+    if ($map['reviewerPHID']) {
+      $query->withReviewerPHID($map['reviewerPHID']);
+    }
 
     if ($map['createdStart']) {
       $query->withDateCreatedAfter($map['createdStart']);
@@ -147,6 +158,7 @@ final class PhabricatorPeopleSearchEngine
     $viewer = $this->requireViewer();
     if ($viewer->getIsAdmin()) {
       $names['approval'] = pht('Approval Queue');
+      $names['reviewer'] = pht('Reviewer');
     }
 
     return $names;
@@ -155,13 +167,16 @@ final class PhabricatorPeopleSearchEngine
   public function buildSavedQueryFromBuiltin($query_key) {
     $query = $this->newSavedQuery();
     $query->setQueryKey($query_key);
-
+    $viewer = $this->requireViewer();
     switch ($query_key) {
       case 'all':
         return $query;
       case 'active':
         return $query
           ->setParameter('isDisabled', false);
+      case 'reviewer':
+        return $query
+          ->setParameter('reviewerPHID', array($viewer->getPHID()));    
       case 'approval':
         return $query
           ->setParameter('needsApproval', true)
@@ -175,7 +190,7 @@ final class PhabricatorPeopleSearchEngine
     array $users,
     PhabricatorSavedQuery $query,
     array $handles) {
-
+    
     assert_instances_of($users, 'PhabricatorUser');
 
     $request = $this->getRequest();
@@ -228,6 +243,7 @@ final class PhabricatorPeopleSearchEngine
 
       if ($viewer->getIsAdmin()) {
         $user_id = $user->getID();
+        $is_reviewer = $user->getReviewerPHID() === $viewer->getPHID();
         if ($is_approval) {
           $item->addAction(
             id(new PHUIListItemView())
@@ -241,6 +257,14 @@ final class PhabricatorPeopleSearchEngine
               ->setName(pht('Approve'))
               ->setWorkflow(true)
               ->setHref($this->getApplicationURI('approve/'.$user_id.'/')));
+        }
+        else if($user_id !== $viewer->getID()){
+          $item->addAction(
+            id(new PHUIListItemView())
+              ->setIcon('fa-cog')
+              ->setName($is_reviewer ? pht('Remove from Review') : pht('Add to Review'))
+              ->setWorkflow(true)
+              ->setHref($this->getApplicationURI('reviewer/'.$user_id.'/')));
         }
       }
 

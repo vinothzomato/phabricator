@@ -48,6 +48,8 @@ final class PhabricatorUser
   protected $isApproved = 0;
   protected $isEnrolledInMultiFactor = 0;
 
+  protected $reviewerPHID;
+
   protected $accountSecret;
 
   private $profileImage = self::ATTACHABLE;
@@ -195,6 +197,7 @@ final class PhabricatorUser
         'profileImageCache' => 'text255?',
         'availabilityCache' => 'text255?',
         'availabilityCacheTTL' => 'uint32?',
+        'reviewerPHID' => 'phid?',
       ),
       self::CONFIG_KEY_SCHEMA => array(
         'key_phid' => null,
@@ -211,6 +214,9 @@ final class PhabricatorUser
         ),
         'key_approved' => array(
           'columns' => array('isApproved'),
+        ),
+        'key_reviewer' => array(
+          'columns' => array('reviewerPHID'),
         ),
       ),
       self::CONFIG_NO_MUTATE => array(

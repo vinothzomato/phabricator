@@ -33,6 +33,8 @@ final class PhabricatorUserLog extends PhabricatorUserDAO
   const ACTION_CHANGE_PASSWORD  = 'change-password';
   const ACTION_CHANGE_USERNAME  = 'change-username';
 
+  const ACTION_CHANGE_REVIEWER  = 'change-reviewer';
+
   const ACTION_ENTER_HISEC = 'hisec-enter';
   const ACTION_EXIT_HISEC = 'hisec-exit';
   const ACTION_FAIL_HISEC = 'hisec-fail';
@@ -78,6 +80,7 @@ final class PhabricatorUserLog extends PhabricatorUserDAO
       self::ACTION_EMAIL_REASSIGN => pht('Email: Reassign'),
       self::ACTION_CHANGE_PASSWORD => pht('Change Password'),
       self::ACTION_CHANGE_USERNAME => pht('Change Username'),
+      self::ACTION_CHANGE_REVIEWER => pht('Change Reviewer'),
       self::ACTION_ENTER_HISEC => pht('Hisec: Enter'),
       self::ACTION_EXIT_HISEC => pht('Hisec: Exit'),
       self::ACTION_FAIL_HISEC => pht('Hisec: Failed Attempt'),
