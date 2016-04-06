@@ -49,7 +49,7 @@ final class DifferentialDiffCreateController extends DifferentialController {
       $v_base = $request->getStr('base');
       $v_head = $request->getStr('head');
 
-      if ($v_repo && $v_base && $v_head) {
+      if (strlen($v_base) && $v_base && $v_head) {
 
         $authorGithubUser = new GithubApiUser();
         $authorGithubUser->setUsername($viewer->getGithubUsername());
@@ -58,10 +58,54 @@ final class DifferentialDiffCreateController extends DifferentialController {
         $repos_json = $authorGithubUser->getAllRepos();
         $repos = json_decode($repos_json, true);
         $repos_urls = ipull($repos, 'html_url');
+        $repo_url = $repos_urls[intval($v_repo)];
 
-        $diff_response = $authorGithubUser->getDiff($repos_urls[intval($v_repo)],$v_base,$v_head);
+        $diff_response = $authorGithubUser->getDiff($repo_url,$v_base,$v_head);
         if ($diff_response) {
           $diff = $diff_response;
+          $prev_diff = id(new DifferentialDiff())->loadOneWhere(
+            'repo = %s AND base = %s AND head = %s ORDER BY id DESC limit 1',
+            $repo_url,$v_base,$v_head);
+          if ($prev_diff) {
+            id(new DifferentialChangesetQuery())
+            ->setViewer($this->getViewer())
+            ->withDiffs(array($prev_diff))
+            ->needAttachToDiffs(true)
+            ->needHunks(true)
+            ->execute();
+
+            $raw_changes = $prev_diff->buildChangesList();
+            $changes = array();
+            foreach ($raw_changes as $changedict) {
+              $changes[] = ArcanistDiffChange::newFromDictionary($changedict);
+            }
+
+            $viewer = $this->getViewer();
+            $loader = id(new PhabricatorFileBundleLoader())
+            ->setViewer($viewer);
+
+            $bundle = ArcanistBundle::newFromChanges($changes);
+            $bundle->setLoadFileDataCallback(array($loader, 'loadFileData'));
+            $raw_diff = $bundle->toGitPatch();
+            $parser = new ArcanistDiffParser();
+            $changes = $parser->parseDiff($diff);
+
+            $changesRawDiff = $parser->parseDiff($raw_diff);
+            if ($changesRawDiff === $changes) {
+              if ($prev_diff->getRevisionID()) {
+                $diff_revision = id(new DifferentialRevision())->load($prev_diff->getRevisionID());
+                if (!$diff_revision->isClosed()) {
+                  return id(new AphrontRedirectResponse())
+                  ->setURI('/D'.$prev_diff->getRevisionID().'?id='.$prev_diff->getID());
+                }
+              }
+              else{
+                $path = '/differential/diff/'.$prev_diff->getID().'/';
+                return id(new AphrontRedirectResponse())
+                ->setURI($path);
+              }
+           }
+          }
         }
       }
 
@@ -80,7 +124,7 @@ final class DifferentialDiffCreateController extends DifferentialController {
             array(
               'diff' => $diff,
               'repositoryPHID' => $repository_phid,
-              'repo' => $v_repo,
+              'repo' => $repo_url,
               'base' => $v_base,
               'head' => $v_head,
               'viewPolicy' => $request->getStr('viewPolicy'),
@@ -150,42 +194,30 @@ final class DifferentialDiffCreateController extends DifferentialController {
     } else {
       $repository_value = array();
     }
-    if ($diff) {
-      $form
-      ->appendChild(
-        id(new AphrontFormTextAreaControl())
-          ->setLabel(pht('Raw Diff'))
-          ->setName('diff')
-          ->setValue($diff)
-          ->setHeight(AphrontFormTextAreaControl::HEIGHT_VERY_TALL)
-          ->setError($e_diff));
-    }
-    else{
-      $authorGithubUser = new GithubApiUser();
-      $authorGithubUser->setUsername($viewer->getGithubUsername());
-      $authorGithubUser->setToken($viewer->getGithubAccessToken());
-      $repos_json = $authorGithubUser->getAllRepos();
-      $repos = json_decode($repos_json, true);
-      $form
-      ->appendChild(
-        id(new AphrontFormSelectControl())
-          ->setLabel(pht('Remote Repository'))
-          ->setName('repo')
-          ->setValue($v_repo)
-          ->setOptions(ipull($repos, 'html_url')))
-      ->appendChild(
-        id(new AphrontFormTextControl())
-          ->setLabel(pht('Base'))
-          ->setName('base')
-          ->setValue($v_base)
-          ->setError($e_base))
-      ->appendChild(
-        id(new AphrontFormTextControl())
-          ->setLabel(pht('Head'))
-          ->setName('head')
-          ->setValue($v_head)
-          ->setError($e_head));
-    }
+    $authorGithubUser = new GithubApiUser();
+    $authorGithubUser->setUsername($viewer->getGithubUsername());
+    $authorGithubUser->setToken($viewer->getGithubAccessToken());
+    $repos_json = $authorGithubUser->getAllRepos();
+    $repos = json_decode($repos_json, true);
+    $form
+    ->appendChild(
+      id(new AphrontFormSelectControl())
+      ->setLabel(pht('Remote Repository'))
+      ->setName('repo')
+      ->setValue($v_repo)
+      ->setOptions(ipull($repos, 'html_url')))
+    ->appendChild(
+      id(new AphrontFormTextControl())
+      ->setLabel(pht('Base'))
+      ->setName('base')
+      ->setValue($v_base)
+      ->setError($e_base))
+    ->appendChild(
+      id(new AphrontFormTextControl())
+      ->setLabel(pht('Head'))
+      ->setName('head')
+      ->setValue($v_head)
+      ->setError($e_head));
 
     $form
       ->appendControl(

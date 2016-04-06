@@ -107,6 +107,21 @@ final class DifferentialDiffViewController extends DifferentialController {
 
     $property_view = new PHUIPropertyListView();
 
+    $repo = $diff->getRepo();
+    $base = $diff->getBase();
+    $head = $diff->getHead();
+
+    if ($repo && $base && $head) {
+      $property_view->addProperty(
+        pht('Repo'),$repo);
+
+      $property_view->addProperty(
+        pht('Base'),$base);
+
+      $property_view->addProperty(
+        pht('Head'),$head);
+    }
+
     $changesets = $diff->loadChangesets();
     $changesets = msort($changesets, 'getSortKey');
 

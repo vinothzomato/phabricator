@@ -49,6 +49,9 @@ final class DifferentialCreateRawDiffConduitAPIMethod
     $parser = new ArcanistDiffParser();
     $changes = $parser->parseDiff($raw_diff);
     $diff = DifferentialDiff::newFromRawChanges($viewer, $changes);
+    $diff->setRepo($repo);
+    $diff->setBase($base);
+    $diff->setHead($head);
 
     // We're bounded by doing INSERTs for all the hunks and changesets, so
     // estimate the number of inserts we'll require.
@@ -73,9 +76,6 @@ final class DifferentialCreateRawDiffConduitAPIMethod
     $diff_data_dict = array(
       'creationMethod' => 'web',
       'authorPHID' => $viewer->getPHID(),
-      'repo' => $repo,
-      'base' => $base,
-      'head' => $head,
       'repositoryPHID' => $repository_phid,
       'lintStatus' => DifferentialLintStatus::LINT_SKIP,
       'unitStatus' => DifferentialUnitStatus::UNIT_SKIP,
