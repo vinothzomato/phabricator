@@ -16,6 +16,9 @@ final class DifferentialCreateRawDiffConduitAPIMethod
       'diff' => 'required string',
       'repositoryPHID' => 'optional string',
       'viewPolicy' => 'optional string',
+      'repo' => 'optional string',
+      'base' => 'optional string',
+      'head' => 'optional string',
     );
   }
 
@@ -26,6 +29,10 @@ final class DifferentialCreateRawDiffConduitAPIMethod
   protected function execute(ConduitAPIRequest $request) {
     $viewer = $request->getUser();
     $raw_diff = $request->getValue('diff');
+
+    $repo = $request->getValue('repo');
+    $base = $request->getValue('base');
+    $head = $request->getValue('head');
 
     $repository_phid = $request->getValue('repositoryPHID');
     if ($repository_phid) {
@@ -66,6 +73,9 @@ final class DifferentialCreateRawDiffConduitAPIMethod
     $diff_data_dict = array(
       'creationMethod' => 'web',
       'authorPHID' => $viewer->getPHID(),
+      'repo' => $repo,
+      'base' => $base,
+      'head' => $head,
       'repositoryPHID' => $repository_phid,
       'lintStatus' => DifferentialLintStatus::LINT_SKIP,
       'unitStatus' => DifferentialUnitStatus::UNIT_SKIP,

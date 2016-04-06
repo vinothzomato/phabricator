@@ -64,11 +64,6 @@ final class DifferentialDiffCreateController extends DifferentialController {
           $diff = $diff_response;
         }
       }
-      else if ($request->getFileExists('diff-file')) {
-        $diff = PhabricatorFile::readUploadedFileData($_FILES['diff-file']);
-      } else {
-        $diff = $request->getStr('diff');
-      }
 
       if (!strlen($diff)) {
         $errors[] = pht(
@@ -85,6 +80,9 @@ final class DifferentialDiffCreateController extends DifferentialController {
             array(
               'diff' => $diff,
               'repositoryPHID' => $repository_phid,
+              'repo' => $v_repo,
+              'base' => $v_base,
+              'head' => $v_head,
               'viewPolicy' => $request->getStr('viewPolicy'),
             ));
           $call->setUser($viewer);

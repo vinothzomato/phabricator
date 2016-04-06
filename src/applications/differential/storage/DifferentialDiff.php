@@ -35,6 +35,10 @@ final class DifferentialDiff
 
   protected $viewPolicy;
 
+  protected $repo;
+  protected $base;
+  protected $head;
+
   private $unsavedChangesets = array();
   private $changesets = self::ATTACHABLE;
   private $revision = self::ATTACHABLE;
@@ -60,6 +64,9 @@ final class DifferentialDiff
         'lineCount' => 'uint32',
         'branch' => 'text255?',
         'bookmark' => 'text255?',
+        'repo' => 'text255?',
+        'base' => 'text255?',
+        'head' => 'text255?',
         'repositoryUUID' => 'text64?',
 
         // T6203/NULLABILITY
