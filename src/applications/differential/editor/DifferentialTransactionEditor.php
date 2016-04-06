@@ -542,7 +542,7 @@ final class DifferentialTransactionEditor
                     ->setTransactionType(PhabricatorTransactions::TYPE_COMMENT)
                     ->attachComment(
                       id(new DifferentialTransactionComment())
-                      ->setContent("Pull request cannot be merged. Message:".$mergeResult));
+                      ->setContent("Pull request cannot be merged. Message:".$mergeJson));
                     }
                 }
                 else{
@@ -550,7 +550,7 @@ final class DifferentialTransactionEditor
                  ->setTransactionType(PhabricatorTransactions::TYPE_COMMENT)
                  ->attachComment(
                   id(new DifferentialTransactionComment())
-                  ->setContent("Pull request cannot be created. Message:".$pullResult));
+                  ->setContent("Pull request cannot be created. Message:".$pullJson));
                 }
               }
             }
