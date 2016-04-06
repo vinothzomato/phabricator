@@ -25,12 +25,17 @@ final class DifferentialDiffCreateController extends DifferentialController {
     }
 
     $diff = null;
+    $v_repo = null;
     // This object is just for policy stuff
     $diff_object = DifferentialDiff::initializeNewDiff($viewer);
     $repository_phid = null;
     $errors = array();
     $e_diff = null;
     $e_file = null;
+    $v_base = null;
+    $v_head = null;
+    $e_base = null;
+    $e_head = null;
     $validation_exception = null;
     if ($request->isFormPost()) {
 
@@ -40,7 +45,26 @@ final class DifferentialDiffCreateController extends DifferentialController {
         $repository_phid = reset($repository_tokenizer);
       }
 
-      if ($request->getFileExists('diff-file')) {
+      $v_repo = $request->getStr('repo');
+      $v_base = $request->getStr('base');
+      $v_head = $request->getStr('head');
+
+      if ($v_repo && $v_base && $v_head) {
+
+        $authorGithubUser = new GithubApiUser();
+        $authorGithubUser->setUsername($viewer->getGithubUsername());
+        $authorGithubUser->setToken($viewer->getGithubAccessToken());
+
+        $repos_json = $authorGithubUser->getAllRepos();
+        $repos = json_decode($repos_json, true);
+        $repos_urls = ipull($repos, 'html_url');
+
+        $diff_response = $authorGithubUser->getDiff($repos_urls[intval($v_repo)],$v_base,$v_head);
+        if ($diff_response) {
+          $diff = $diff_response;
+        }
+      }
+      else if ($request->getFileExists('diff-file')) {
         $diff = PhabricatorFile::readUploadedFileData($_FILES['diff-file']);
       } else {
         $diff = $request->getStr('diff');
@@ -99,26 +123,6 @@ final class DifferentialDiffCreateController extends DifferentialController {
       ->execute();
 
     $info_view = null;
-    if (!$request->isFormPost()) {
-      $info_view = id(new PHUIInfoView())
-        ->setSeverity(PHUIInfoView::SEVERITY_NOTICE)
-        ->setErrors(
-          array(
-            array(
-              pht(
-                'The best way to create a diff is to use the Arcanist '.
-                'command-line tool.'),
-              ' ',
-              $arcanist_link,
-            ),
-            pht(
-              'You can also paste a diff below, or upload a file '.
-              'containing a diff (for example, from %s, %s or %s).',
-              phutil_tag('tt', array(), 'svn diff'),
-              phutil_tag('tt', array(), 'git diff'),
-              phutil_tag('tt', array(), 'hg diff --git')),
-          ));
-    }
 
     if ($revision) {
       $title = pht('Update Diff');
@@ -148,24 +152,48 @@ final class DifferentialDiffCreateController extends DifferentialController {
     } else {
       $repository_value = array();
     }
-
-    $form
+    if ($diff) {
+      $form
       ->appendChild(
         id(new AphrontFormTextAreaControl())
           ->setLabel(pht('Raw Diff'))
           ->setName('diff')
           ->setValue($diff)
           ->setHeight(AphrontFormTextAreaControl::HEIGHT_VERY_TALL)
-          ->setError($e_diff))
+          ->setError($e_diff));
+    }
+    else{
+      $authorGithubUser = new GithubApiUser();
+      $authorGithubUser->setUsername($viewer->getGithubUsername());
+      $authorGithubUser->setToken($viewer->getGithubAccessToken());
+      $repos_json = $authorGithubUser->getAllRepos();
+      $repos = json_decode($repos_json, true);
+      $form
       ->appendChild(
-        id(new AphrontFormFileControl())
-          ->setLabel(pht('Raw Diff From File'))
-          ->setName('diff-file')
-          ->setError($e_file))
+        id(new AphrontFormSelectControl())
+          ->setLabel(pht('Remote Repository'))
+          ->setName('repo')
+          ->setValue($v_repo)
+          ->setOptions(ipull($repos, 'html_url')))
+      ->appendChild(
+        id(new AphrontFormTextControl())
+          ->setLabel(pht('Base'))
+          ->setName('base')
+          ->setValue($v_base)
+          ->setError($e_base))
+      ->appendChild(
+        id(new AphrontFormTextControl())
+          ->setLabel(pht('Head'))
+          ->setName('head')
+          ->setValue($v_head)
+          ->setError($e_head));
+    }
+
+    $form
       ->appendControl(
         id(new AphrontFormTokenizerControl())
           ->setName(id(new DifferentialRepositoryField())->getFieldKey())
-          ->setLabel(pht('Repository'))
+          ->setLabel(pht('Local Repository'))
           ->setDatasource(new DiffusionRepositoryDatasource())
           ->setValue($repository_value)
           ->setLimit(1))

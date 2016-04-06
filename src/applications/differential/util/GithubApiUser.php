@@ -33,6 +33,16 @@ extends Phobject {
 		return $this->executeCurlPutRequest($url);
 	}
 
+	public function getAllRepos(){
+		$url = $this->baseApiURL.'user/repos';
+		return $this->executeCurlGetRequest($url);
+	}
+
+	public function getDiff($repo,$base,$head){
+		$url = $repo.'/compare/'.$base.'...'.$head.'.diff';
+		return $this->executeCurlGetRequest($url);
+	}
+
 	private function executeCurlPostRequest($url, $postData){
 		$ch = curl_init($url);
 		curl_setopt_array($ch, array(
