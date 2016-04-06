@@ -95,18 +95,24 @@ final class DifferentialDiffCreateController extends DifferentialController {
               $changes[] = ArcanistDiffChange::newFromDictionary($changedict);
             }
 
-            $viewer = $this->getViewer();
             $loader = id(new PhabricatorFileBundleLoader())
             ->setViewer($viewer);
 
             $bundle = ArcanistBundle::newFromChanges($changes);
             $bundle->setLoadFileDataCallback(array($loader, 'loadFileData'));
             $raw_diff = $bundle->toGitPatch();
-            $parser = new ArcanistDiffParser();
-            $changes = $parser->parseDiff($diff);
 
-            $changesRawDiff = $parser->parseDiff($raw_diff);
-            if ($changesRawDiff === $changes) {
+            $parser = new ArcanistDiffParser();
+            $diff_changes = $parser->parseDiff($diff);
+
+            $loader = id(new PhabricatorFileBundleLoader())
+            ->setViewer($viewer);
+
+            $bundle = ArcanistBundle::newFromChanges($diff_changes);
+            $bundle->setLoadFileDataCallback(array($loader, 'loadFileData'));
+            $new_diff = $bundle->toGitPatch();
+
+            if ($raw_diff === $new_diff) {
               if ($prev_diff->getRevisionID()) {
                 $diff_revision = id(new DifferentialRevision())->load($prev_diff->getRevisionID());
                 if (!$diff_revision->isClosed()) {
@@ -116,6 +122,9 @@ final class DifferentialDiffCreateController extends DifferentialController {
               }
               else{
                 $path = '/differential/diff/'.$prev_diff->getID().'/';
+                if ($revision) {
+                  $path = $path.'?revisionID='.$revision->getID();
+                }
                 return id(new AphrontRedirectResponse())
                 ->setURI($path);
               }
