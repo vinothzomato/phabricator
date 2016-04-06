@@ -26,6 +26,7 @@ final class DifferentialDiffCreateController extends DifferentialController {
 
     $diff = null;
     $v_repo = null;
+    $v_repo_url = null;
     // This object is just for policy stuff
     $diff_object = DifferentialDiff::initializeNewDiff($viewer);
     $repository_phid = null;
@@ -37,6 +38,20 @@ final class DifferentialDiffCreateController extends DifferentialController {
     $e_base = null;
     $e_head = null;
     $validation_exception = null;
+
+    if ($revision) {
+      $diffs = id(new DifferentialDiffQuery())
+      ->setViewer($viewer)
+      ->withRevisionIDs(array($revision_id))
+      ->execute();
+      $diffs = array_reverse($diffs, $preserve_keys = true);
+      $revision_diff = last($diffs);
+      $v_repo_url = $revision_diff->getRepo();
+      $v_base = $revision_diff->getBase();
+      $v_head = $revision_diff->getHead();
+      $repository_phid = $revision_diff->getRepositoryPHID();
+    }
+
     if ($request->isFormPost()) {
 
       $repository_tokenizer = $request->getArr(
@@ -199,6 +214,9 @@ final class DifferentialDiffCreateController extends DifferentialController {
     $authorGithubUser->setToken($viewer->getGithubAccessToken());
     $repos_json = $authorGithubUser->getAllRepos();
     $repos = json_decode($repos_json, true);
+    if ($v_repo_url) {
+      $v_repo = array_search($v_repo_url, ipull($repos, 'html_url'));
+    }
     $form
     ->appendChild(
       id(new AphrontFormSelectControl())
