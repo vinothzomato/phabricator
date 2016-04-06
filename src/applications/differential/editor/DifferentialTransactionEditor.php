@@ -501,7 +501,12 @@ final class DifferentialTransactionEditor
 
               $diff = last($diffs);
               $branch = $diff->getBranch();
-              $branch = $diff->getBranch();
+              if (!$branch) {
+                $branch = $diff->getHead();
+              }
+              else{
+                $branch = $author->getGithubUsername().':'.$branch;
+              }
 
               if ($branch && strlen($repo)) {
                 $authorGithubUser = new GithubApiUser();
@@ -509,7 +514,7 @@ final class DifferentialTransactionEditor
                 $authorGithubUser->setToken($author->getGithubAccessToken());
                 $authorGithubUser->setRepo($repo);
 
-                $pullJson = $authorGithubUser->createPullRequest('D'.$object->getID(),'master',$author->getGithubUsername().':'.$branch,$actor->getGithubUsername());
+                $pullJson = $authorGithubUser->createPullRequest('D'.$object->getID(),'master',$branch,$actor->getGithubUsername());
                 $pullResult = json_decode($pullJson, true);
                 if (isset($pullResult['url'])) {
 
