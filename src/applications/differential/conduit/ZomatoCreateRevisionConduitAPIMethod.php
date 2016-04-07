@@ -148,8 +148,6 @@ final class ZomatoCreateRevisionConduitAPIMethod
     $fields['reviewerPHIDs'] = array($viewer->getReviewerPHID());
     $fields['ccPHIDs'] = array($viewer->getReviewerPHID());
 
-    return array('fields' => $fields);
-
     $revision = DifferentialRevision::initializeNewRevision($viewer);
 
     $this->applyFieldEdit(
