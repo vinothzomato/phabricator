@@ -146,9 +146,23 @@ final class ZomatoCreateRevisionConduitAPIMethod
     }
 
     $fields['reviewerPHIDs'] = array($viewer->getReviewerPHID());
+    $fields['reviewers'] = array($viewer->getReviewerPHID());
     $fields['ccPHIDs'] = array($viewer->getReviewerPHID());
+    $fields['subscriber'] = array($viewer->getReviewerPHID());
 
+    $reviewers = array();
+    if ($viewer->getReviewerPHID()) {
+      $reviewer = new DifferentialReviewer(
+        $viewer->getReviewerPHID(),
+        array(
+          'status' => DifferentialReviewerStatus::STATUS_ADDED,
+          ));
+      if ($reviewer) {
+        $reviewers[] = $reviewer;
+      }
+    }
     $revision = DifferentialRevision::initializeNewRevision($viewer);
+    $revision->attachReviewerStatus($reviewers);
 
     $this->applyFieldEdit(
       $request,
@@ -156,15 +170,6 @@ final class ZomatoCreateRevisionConduitAPIMethod
       $newDiff,
       $fields,
       $message = null);
-
-    // $call = new ConduitCall(
-    //   'differential.createrevision',
-    //   array(
-    //     'fields' => $fields,
-    //     'diffid' => $newDiff->getID(),
-    //     ));
-    // $call->setUser($viewer);
-    // $result = $call->execute();
 
     return array(
       'revisionid'  => $revision->getID(),
