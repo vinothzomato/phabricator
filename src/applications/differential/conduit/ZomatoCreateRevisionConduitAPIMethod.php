@@ -117,28 +117,33 @@ final class ZomatoCreateRevisionConduitAPIMethod
             throw new ConduitException('Already a active revision exists with same diff. Please visit '.PhabricatorEnv::getURI('/D'.$diff_revision->getID()));
           }
         }
+        else{
+          $newDiff = $prev_diff;
+        }
       }
     }
 
-    $call = new ConduitCall(
-      'differential.createrawdiff',
-      array(
-        'diff' => $diff,
-        'repositoryPHID' => $repository->getPHID(),
-        'repo' => $repo,
-        'base' => $base,
-        'head' => $head,
-        'viewPolicy' => 'users',
-        ));
-    $call->setUser($viewer);
-    $result = $call->execute();
+    if (!$newDiff) {
+      $call = new ConduitCall(
+        'differential.createrawdiff',
+        array(
+          'diff' => $diff,
+          'repositoryPHID' => $repository->getPHID(),
+          'repo' => $repo,
+          'base' => $base,
+          'head' => $head,
+          'viewPolicy' => 'users',
+          ));
+      $call->setUser($viewer);
+      $result = $call->execute();
 
-    $diff_id = $result['id'];
+      $diff_id = $result['id'];
 
-    $newDiff = id(new DifferentialDiffQuery())
-    ->setViewer($viewer)
-    ->withIDs(array($diff_id))
-    ->executeOne();
+      $newDiff = id(new DifferentialDiffQuery())
+      ->setViewer($viewer)
+      ->withIDs(array($diff_id))
+      ->executeOne();
+    }
 
     return  array('diffId' => $newDiff->getID());
 
