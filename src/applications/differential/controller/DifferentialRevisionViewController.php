@@ -493,6 +493,7 @@ final class DifferentialRevisionViewController extends DifferentialController {
     $revision_id = $revision->getID();
     $revision_phid = $revision->getPHID();
     $curtain = $this->newCurtainView($revision);
+    $is_actor_author = $revision->getAuthorPHID() === $viewer->getPHID();
 
     $can_edit = PhabricatorPolicyFilter::hasCapability(
       $viewer,
@@ -512,8 +513,8 @@ final class DifferentialRevisionViewController extends DifferentialController {
         ->setIcon('fa-upload')
         ->setHref("/differential/revision/update/{$revision_id}/")
         ->setName(pht('Update Diff'))
-        ->setDisabled(!$can_edit)
-        ->setWorkflow(!$can_edit));
+        ->setDisabled(!$is_actor_author)
+        ->setWorkflow(!$is_actor_author));
 
     $this->requireResource('phabricator-object-selector-css');
     $this->requireResource('javelin-behavior-phabricator-object-selector');

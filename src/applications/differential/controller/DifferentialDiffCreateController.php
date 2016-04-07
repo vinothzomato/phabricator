@@ -135,8 +135,7 @@ final class DifferentialDiffCreateController extends DifferentialController {
 
       if (!strlen($diff)) {
         $errors[] = pht(
-          'You can not create an empty diff. Paste a diff or upload a '.
-          'file containing a diff.');
+          'You can not create an empty diff. No changes found.');
         $e_diff = pht('Required');
         $e_file = pht('Required');
       }
@@ -218,13 +217,16 @@ final class DifferentialDiffCreateController extends DifferentialController {
     } else {
       $repository_value = array();
     }
-    $authorGithubUser = new GithubApiUser();
-    $authorGithubUser->setUsername($viewer->getGithubUsername());
-    $authorGithubUser->setToken($viewer->getGithubAccessToken());
-    $repos_json = $authorGithubUser->getAllRepos();
-    $repos = json_decode($repos_json, true);
     if ($v_repo_url) {
-      $v_repo = array_search($v_repo_url, ipull($repos, 'html_url'));
+      $options = array($v_repo_url);
+    }
+    else{
+      $authorGithubUser = new GithubApiUser();
+      $authorGithubUser->setUsername($viewer->getGithubUsername());
+      $authorGithubUser->setToken($viewer->getGithubAccessToken());
+      $repos_json = $authorGithubUser->getAllRepos();
+      $repos = json_decode($repos_json, true);
+      $options = ipull($repos, 'html_url');
     }
     $form
     ->appendChild(
@@ -232,7 +234,7 @@ final class DifferentialDiffCreateController extends DifferentialController {
       ->setLabel(pht('Remote Repository'))
       ->setName('repo')
       ->setValue($v_repo)
-      ->setOptions(ipull($repos, 'html_url')))
+      ->setOptions($options))
     ->appendChild(
       id(new AphrontFormTextControl())
       ->setLabel(pht('Base'))
