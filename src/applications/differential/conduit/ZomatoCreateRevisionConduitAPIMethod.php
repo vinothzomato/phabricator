@@ -8,7 +8,7 @@ final class ZomatoCreateRevisionConduitAPIMethod
   }
 
   public function getMethodDescription() {
-    return pht('Create a new Differential revision.');
+    return pht('Create a new differential revision.');
   }
 
   protected function defineParamTypes() {
