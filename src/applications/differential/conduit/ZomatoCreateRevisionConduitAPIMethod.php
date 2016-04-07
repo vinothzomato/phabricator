@@ -150,6 +150,10 @@ final class ZomatoCreateRevisionConduitAPIMethod
 
     $revision = DifferentialRevision::initializeNewRevision($viewer);
 
+    return array(
+      'revision'  => print_r($revision)
+    );
+
     $this->applyFieldEdit(
       $request,
       $revision,
