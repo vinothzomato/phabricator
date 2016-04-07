@@ -68,7 +68,7 @@ final class ZomatoCreateRevisionConduitAPIMethod
 
     $diff = $authorGithubUser->getDiff($repo,$base,$head);
 
-    var_dump($diff); die();
+    return array('result' => $diff);
 
     if (!$diff) {
       throw new ConduitException('ERR_NO_CHANGES');
