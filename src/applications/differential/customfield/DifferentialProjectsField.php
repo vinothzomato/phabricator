@@ -7,6 +7,10 @@ final class DifferentialProjectsField
     return 'phabricator:projects';
   }
 
+  public function getFieldKeyForConduit() {
+    return 'projects';
+  }
+
   public function getFieldName() {
     return pht('Projects');
   }
