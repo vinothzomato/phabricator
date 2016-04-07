@@ -34,7 +34,7 @@ final class DifferentialCreateRevisionConduitAPIMethod
   protected function execute(ConduitAPIRequest $request) {
     $viewer = $request->getUser();
 
-    return array('result' => $request->getValue('fields', array());
+    return array('result' => $request->getValue('fields', array()));
 
     $diff = id(new DifferentialDiffQuery())
       ->setViewer($viewer)
