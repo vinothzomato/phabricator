@@ -35,12 +35,13 @@ final class ZomatoCreateRevisionConduitAPIMethod
   }
 
   protected function execute(ConduitAPIRequest $request) {
-    $repo = $request->getValue('repo');
-    $base = $request->getValue('base');
-    $head = $request->getValue('head');
 
     $viewer = $request->getUser();
     $fields = $request->getValue('fields', array());
+
+    $repo = $request->getValue('repo');
+    $base = $request->getValue('base');
+    $head = $viewer->getGithubUsername().':'.$request->getValue('head');
 
     $repoId = $request->getValue('repoId');
     $projectId = $request->getValue('projectId');
