@@ -69,7 +69,7 @@ extends DifferentialConduitAPIMethod {
         ))
     ->executeOne();
 
-    if ($revision->getStatus() == ArcanistDifferentialRevisionStatus::CLOSED) {
+    if ($revision->isClosed()) {
       throw new ConduitException('ERR_REVISION_CLOSED');
     }
 
