@@ -27,6 +27,7 @@ extends DifferentialConduitAPIMethod {
   protected function defineErrorTypes() {
     return array(
       'ERR_NO_CHANGES' => pht('No changes found between base and head.'),
+      'ERR_UPTO_DATE' => pht('Everything up-to-date.'),
       'ERR_NO_DIFF' => pht('No diff found. Please create a new revision using arc z --create .'),
       'ERR_REVISION_CLOSED' => pht('Revision closed. Please create a new revision using arc z --create .'),
       );
@@ -73,6 +74,39 @@ extends DifferentialConduitAPIMethod {
       throw new ConduitException('ERR_REVISION_CLOSED');
     }
 
+    id(new DifferentialChangesetQuery())
+    ->setViewer($viewer)
+    ->withDiffs(array($diff))
+    ->needAttachToDiffs(true)
+    ->needHunks(true)
+    ->execute();
+
+    $raw_changes = $diff->buildChangesList();
+    $changes = array();
+    foreach ($raw_changes as $changedict) {
+      $changes[] = ArcanistDiffChange::newFromDictionary($changedict);
+    }
+
+    $loader = id(new PhabricatorFileBundleLoader())
+    ->setViewer($viewer);
+
+    $bundle = ArcanistBundle::newFromChanges($changes);
+    $bundle->setLoadFileDataCallback(array($loader, 'loadFileData'));
+    $old_diff = $bundle->toGitPatch();
+
+    $parser = new ArcanistDiffParser();
+    $diff_changes = $parser->parseDiff($raw_diff);
+
+    $loader = id(new PhabricatorFileBundleLoader())
+    ->setViewer($viewer);
+
+    $bundle = ArcanistBundle::newFromChanges($diff_changes);
+    $bundle->setLoadFileDataCallback(array($loader, 'loadFileData'));
+    $new_diff = $bundle->toGitPatch();
+
+    if ($old_diff === $new_diff) {
+      throw new ConduitException('ERR_UPTO_DATE');
+    }
 
     $call = new ConduitCall(
       'differential.createrawdiff',
