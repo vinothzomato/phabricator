@@ -145,6 +145,8 @@ final class ZomatoCreateRevisionConduitAPIMethod
       ->executeOne();
     }
 
+    return  array('diffId' => $newDiff->getID());
+
     $fields['reviewerPHIDs'] = array($viewer->getReviewerPHID());
     $fields['ccPHIDs'] = array($viewer->getReviewerPHID());
 
