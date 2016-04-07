@@ -61,7 +61,7 @@ final class ZomatoCreateRevisionConduitAPIMethod
     if (!$project) {
       throw new ConduitException('ERR_PROJECT_NOT_FOUND');
     }      
-    $fields['projects'] = array($project->getPHID());
+    $fields['project'] = array($project->getPHID());
 
     $authorGithubUser = new GithubApiUser();
     $authorGithubUser->setUsername($viewer->getGithubUsername());
