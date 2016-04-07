@@ -53,16 +53,26 @@ final class DifferentialRevision extends DifferentialDAO
   const RELATION_SUBSCRIBED   = 'subd';
 
   public static function initializeNewRevision(PhabricatorUser $actor) {
-    $app = id(new PhabricatorApplicationQuery())
+     $app = id(new PhabricatorApplicationQuery())
       ->setViewer($actor)
       ->withClasses(array('PhabricatorDifferentialApplication'))
       ->executeOne();
     $view_policy = $app->getPolicy(
       DifferentialDefaultViewCapability::CAPABILITY);
+    if ($actor->getReviewerPHID()) {
+      $relationships = array(
+        'relation' => self::RELATION_REVIEWER,
+        'objectPHID' => $actor->getReviewerPHID(),
+        'reasonPHID' => null,
+      );
+    }
+    else{
+      $relationships = array();
+    }
     return id(new DifferentialRevision())
       ->setViewPolicy($view_policy)
       ->setAuthorPHID($actor->getPHID())
-      ->attachRelationships(array())
+      ->attachRelationships($relationships)
       ->attachRepository(null)
       ->setStatus(ArcanistDifferentialRevisionStatus::NEEDS_REVIEW);
   }

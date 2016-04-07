@@ -148,16 +148,28 @@ final class ZomatoCreateRevisionConduitAPIMethod
     $fields['reviewerPHIDs'] = array($viewer->getReviewerPHID());
     $fields['ccPHIDs'] = array($viewer->getReviewerPHID());
 
-    $call = new ConduitCall(
-      'differential.createrevision',
-      array(
-        'fields' => $fields,
-        'diffid' => $newDiff->getID(),
-        ));
-    $call->setUser($viewer);
-    $result = $call->execute();
+    $revision = DifferentialRevision::initializeNewRevision($viewer);
 
-    return $result;
+    $this->applyFieldEdit(
+      $request,
+      $revision,
+      $newDiff,
+      $fields,
+      $message = null);
+
+    // $call = new ConduitCall(
+    //   'differential.createrevision',
+    //   array(
+    //     'fields' => $fields,
+    //     'diffid' => $newDiff->getID(),
+    //     ));
+    // $call->setUser($viewer);
+    // $result = $call->execute();
+
+    return array(
+      'revisionid'  => $revision->getID(),
+      'uri'         => PhabricatorEnv::getURI('/D'.$revision->getID()),
+      );
   }
 
 }
