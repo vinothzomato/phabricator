@@ -61,7 +61,7 @@ final class ZomatoCreateRevisionConduitAPIMethod
     if (!$project) {
       throw new ConduitException('ERR_PROJECT_NOT_FOUND');
     }      
-    $fields['project'] = array($project->getPHID());
+    $fields['projects'] = array($project->getPHID());
 
     $authorGithubUser = new GithubApiUser();
     $authorGithubUser->setUsername($viewer->getGithubUsername());
@@ -145,8 +145,8 @@ final class ZomatoCreateRevisionConduitAPIMethod
       ->executeOne();
     }
 
-    $fields['reviewers'] = array($viewer->getReviewerPHID());
-    $fields['subscribers'] = array($viewer->getReviewerPHID());
+    $fields['reviewerPHIDs'] = array($viewer->getReviewerPHID());
+    $fields['ccPHIDs'] = array($viewer->getReviewerPHID());
 
     $reviewers = array();
     if ($viewer->getReviewerPHID()) {
