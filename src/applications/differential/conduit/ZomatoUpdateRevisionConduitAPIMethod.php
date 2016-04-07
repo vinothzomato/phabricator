@@ -59,7 +59,7 @@ extends DifferentialConduitAPIMethod {
 
     $revision = id(new DifferentialRevisionQuery())
     ->setViewer($viewer)
-    ->withIDs(array($diff->getID()))
+    ->withIDs(array($diff->getRevisionID()))
     ->needReviewerStatus(true)
     ->needActiveDiffs(true)
     ->requireCapabilities(
