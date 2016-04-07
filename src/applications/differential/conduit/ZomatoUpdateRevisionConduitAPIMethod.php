@@ -1,7 +1,7 @@
 <?php
 
 final class ZomatoUpdateRevisionConduitAPIMethod
-  extends DifferentialConduitAPIMethod {
+extends DifferentialConduitAPIMethod {
 
   public function getAPIMethodName() {
     return 'zomato.updaterevision';
@@ -17,7 +17,7 @@ final class ZomatoUpdateRevisionConduitAPIMethod
       'base' => 'required string',
       'head' => 'required string',
       'message' => 'required string',
-    );
+      );
   }
 
   protected function defineReturnType() {
@@ -29,7 +29,7 @@ final class ZomatoUpdateRevisionConduitAPIMethod
       'ERR_NO_CHANGES' => pht('No changes found between base and head.'),
       'ERR_NO_DIFF' => pht('No diff found. Please create a new revision using arc z --create .'),
       'ERR_REVISION_CLOSED' => pht('Revision closed. Please create a new revision using arc z --create .'),
-    );
+      );
   }
 
   protected function execute(ConduitAPIRequest $request) {
@@ -106,5 +106,6 @@ final class ZomatoUpdateRevisionConduitAPIMethod
       'uri'         => PhabricatorEnv::getURI('/D'.$revision->getID()),
       );
   }
+}
 
 ?> 
