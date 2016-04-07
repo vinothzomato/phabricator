@@ -123,7 +123,7 @@ final class ZomatoCreateRevisionConduitAPIMethod
       }
     }
 
-    return  array('diffId' => $newDiff->getID());
+    return  array('diffId' => $newDiff->getRevisionID());
 
     if (!$newDiff) {
       $call = new ConduitCall(
