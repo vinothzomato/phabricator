@@ -63,6 +63,7 @@ final class DifferentialDiffCreateController extends DifferentialController {
       $v_repo = $request->getStr('repo');
       $v_base = $request->getStr('base');
       $v_head = $request->getStr('head');
+      $repo_url = $request->getStr('repo_url');
 
       if (strlen($v_base) && $v_base && $v_head) {
 
@@ -70,10 +71,12 @@ final class DifferentialDiffCreateController extends DifferentialController {
         $authorGithubUser->setUsername($viewer->getGithubUsername());
         $authorGithubUser->setToken($viewer->getGithubAccessToken());
 
-        $repos_json = $authorGithubUser->getAllRepos();
-        $repos = json_decode($repos_json, true);
-        $repos_urls = ipull($repos, 'html_url');
-        $repo_url = $repos_urls[intval($v_repo)];
+        if (!$repo_url) {
+          $repos_json = $authorGithubUser->getAllRepos();
+          $repos = json_decode($repos_json, true);
+          $repos_urls = ipull($repos, 'html_url');
+          $repo_url = $repos_urls[intval($v_repo)];
+        }
 
         $diff_response = $authorGithubUser->getDiff($repo_url,$v_base,$v_head);
         if ($diff_response) {
@@ -226,19 +229,25 @@ final class DifferentialDiffCreateController extends DifferentialController {
     $options = ipull($repos, 'html_url');
 
     if ($v_repo_url) {
-      var_dump($v_repo_url);
-      var_dump($options);
-      $v_repo = array_search($v_repo_url,$options);
-      var_dump($v_repo);
+      $form
+      ->appendChild(
+        id(new AphrontFormTextControl())
+        ->setLabel(pht('Remote Repository'))
+        ->setName('repo_url')
+        ->setValue($v_repo_url));
     }
+    else{
+      $form
+      ->appendChild(
+        id(new AphrontFormSelectControl())
+        ->setLabel(pht('Remote Repository'))
+        ->setName('repo')
+        ->setValue($v_repo)
+        ->setOptions($options));
+    }
+    
 
     $form
-    ->appendChild(
-      id(new AphrontFormSelectControl())
-      ->setLabel(pht('Remote Repository'))
-      ->setName('repo')
-      ->setValue($v_repo)
-      ->setOptions($options))
     ->appendChild(
       id(new AphrontFormTextControl())
       ->setLabel(pht('Base'))
@@ -250,27 +259,25 @@ final class DifferentialDiffCreateController extends DifferentialController {
       ->setLabel(pht('Head'))
       ->setName('head')
       ->setValue($v_head)
-      ->setError($e_head));
-
-    $form
-      ->appendControl(
-        id(new AphrontFormTokenizerControl())
-          ->setName(id(new DifferentialRepositoryField())->getFieldKey())
-          ->setLabel(pht('Local Repository'))
-          ->setDatasource(new DiffusionRepositoryDatasource())
-          ->setValue($repository_value)
-          ->setLimit(1))
-      ->appendChild(
-        id(new AphrontFormPolicyControl())
-          ->setUser($viewer)
-          ->setName('viewPolicy')
-          ->setPolicyObject($diff_object)
-          ->setPolicies($policies)
-          ->setCapability(PhabricatorPolicyCapability::CAN_VIEW))
-      ->appendChild(
-        id(new AphrontFormSubmitControl())
-          ->addCancelButton($cancel_uri)
-          ->setValue($button));
+      ->setError($e_head))
+    ->appendControl(
+      id(new AphrontFormTokenizerControl())
+      ->setName(id(new DifferentialRepositoryField())->getFieldKey())
+      ->setLabel(pht('Local Repository'))
+      ->setDatasource(new DiffusionRepositoryDatasource())
+      ->setValue($repository_value)
+      ->setLimit(1))
+    ->appendChild(
+      id(new AphrontFormPolicyControl())
+      ->setUser($viewer)
+      ->setName('viewPolicy')
+      ->setPolicyObject($diff_object)
+      ->setPolicies($policies)
+      ->setCapability(PhabricatorPolicyCapability::CAN_VIEW))
+    ->appendChild(
+      id(new AphrontFormSubmitControl())
+      ->addCancelButton($cancel_uri)
+      ->setValue($button));
 
     $form_box = id(new PHUIObjectBoxView())
       ->setHeaderText(pht('Diff'))
