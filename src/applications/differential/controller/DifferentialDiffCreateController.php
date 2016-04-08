@@ -75,8 +75,6 @@ final class DifferentialDiffCreateController extends DifferentialController {
         $repos_urls = ipull($repos, 'html_url');
         $repo_url = $repos_urls[intval($v_repo)];
 
-        var_dump($v_repo);  var_dump($repos_urls); var_dump($repo_url); die();
-
         $diff_response = $authorGithubUser->getDiff($repo_url,$v_base,$v_head);
         if ($diff_response) {
           $diff = $diff_response;
@@ -219,17 +217,18 @@ final class DifferentialDiffCreateController extends DifferentialController {
     } else {
       $repository_value = array();
     }
+
+    $authorGithubUser = new GithubApiUser();
+    $authorGithubUser->setUsername($viewer->getGithubUsername());
+    $authorGithubUser->setToken($viewer->getGithubAccessToken());
+    $repos_json = $authorGithubUser->getAllRepos();
+    $repos = json_decode($repos_json, true);
+    $options = ipull($repos, 'html_url');
+
     if ($v_repo_url) {
-      $options = array($v_repo_url);
+      $v_repo = array_search($v_repo_url,$repos);
     }
-    else{
-      $authorGithubUser = new GithubApiUser();
-      $authorGithubUser->setUsername($viewer->getGithubUsername());
-      $authorGithubUser->setToken($viewer->getGithubAccessToken());
-      $repos_json = $authorGithubUser->getAllRepos();
-      $repos = json_decode($repos_json, true);
-      $options = ipull($repos, 'html_url');
-    }
+
     $form
     ->appendChild(
       id(new AphrontFormSelectControl())
