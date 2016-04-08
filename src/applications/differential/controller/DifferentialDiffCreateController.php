@@ -75,7 +75,7 @@ final class DifferentialDiffCreateController extends DifferentialController {
         $repos_urls = ipull($repos, 'html_url');
         $repo_url = $repos_urls[intval($v_repo)];
 
-        var_dump($repo_url); die();
+        var_dump($v_repo);  var_dump($repos_urls); var_dump($repo_url); die();
 
         $diff_response = $authorGithubUser->getDiff($repo_url,$v_base,$v_head);
         if ($diff_response) {
