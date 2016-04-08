@@ -208,6 +208,18 @@ final class PhabricatorDifferentialApplication extends PhabricatorApplication {
     );
   }
 
+  public function getQuickCreateItems(PhabricatorUser $viewer) {
+    $items = array();
+
+    $item = id(new PHUIListItemView())
+    ->setName(pht('Create Diff'))
+    ->setIcon('fa-cog')
+    ->setHref($this->getBaseURI().'diff/create/');
+    $items[] = $item;
+
+    return $items;
+  }
+
   public function getApplicationSearchDocumentTypes() {
     return array(
       DifferentialRevisionPHIDType::TYPECONST,
