@@ -226,7 +226,7 @@ final class DifferentialDiffCreateController extends DifferentialController {
     $options = ipull($repos, 'html_url');
 
     if ($v_repo_url) {
-      $v_repo = array_search($v_repo_url,$repos);
+      $v_repo = array_search($v_repo_url,$options);
     }
 
     $form
