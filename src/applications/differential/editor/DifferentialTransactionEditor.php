@@ -536,10 +536,6 @@ final class DifferentialTransactionEditor
                     ->attachComment(
                       id(new DifferentialTransactionComment())
                       ->setContent($mergeResult['message']));
-                    $results[] = id(new DifferentialTransaction())
-                    ->setTransactionType(DifferentialTransaction::TYPE_ACTION)
-                    ->setNewValue(DifferentialAction::ACTION_CLOSE)
-                    ->setMetadataValue('isCommitClose', true);
                   }
                   else{
                     $results[] = id(new DifferentialTransaction())
