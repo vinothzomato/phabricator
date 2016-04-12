@@ -35,7 +35,7 @@ extends Phobject {
 
 	public function getAllRepos(){
 		$url = $this->baseApiURL.'user/repos';
-		return $this->executeCurlGetRequest($url);'repos/'.
+		return $this->executeCurlGetRequest($url);
 	}
 
 	public function getDiff($repo,$base,$head){
