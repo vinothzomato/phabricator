@@ -11,7 +11,8 @@ final class PhabricatorGitHubAuthProvider
     $adapter = $this->getAdapter();
     $adapter->setState($this->getAuthCSRFCode($request));
 
-    $adapter->setScope('user,repo,read:org');
+    //$adapter->setScope('user,repo,read:org');
+    $adapter->setScope('repo,read:org');
 
     $attributes = array(
       'method' => 'GET',
