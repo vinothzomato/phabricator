@@ -484,7 +484,7 @@ final class DifferentialTransactionEditor
 
             $repository = $object->getRepository();
 
-            if ($repository) {
+            if ($repository && $action_type == DifferentialAction::ACTION_ACCEPT) {
 
               $repo = str_replace('.git','',basename($repository->getRemoteURI()));
 
@@ -508,11 +508,15 @@ final class DifferentialTransactionEditor
               if (!$base) {
                 $base = 'master';
               }
+
               $repo_url = $diff->getRepo();
               if (!$repo_url) {
                 throw new Exception(
                   pht('This revision has no repo. Something has gone quite wrong.'));
               }
+
+              throw new Exception(
+                  pht('Debug Base:'.$base.' Repo:'.$repo_url.' Head:'.$head));
 
               if ($head && $base && strlen($repo_url)) {
                 $authorGithubUser = new GithubApiUser();
