@@ -3063,7 +3063,6 @@ CREATE TABLE `user` (
   UNIQUE KEY `phid` (`phid`),
   KEY `realName` (`realName`),
   KEY `key_approved` (`isApproved`)
-  KEY `key_reviewer` (`reviewerPHID`)
 ) ENGINE=InnoDB DEFAULT CHARSET={$CHARSET} COLLATE={$COLLATE_TEXT};
 
 CREATE TABLE `user_authinvite` (

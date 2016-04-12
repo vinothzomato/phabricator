@@ -215,9 +215,6 @@ final class PhabricatorUser
         'key_approved' => array(
           'columns' => array('isApproved'),
         ),
-        'key_reviewer' => array(
-          'columns' => array('reviewerPHID'),
-        ),
       ),
       self::CONFIG_NO_MUTATE => array(
         'profileImageCache' => true,
