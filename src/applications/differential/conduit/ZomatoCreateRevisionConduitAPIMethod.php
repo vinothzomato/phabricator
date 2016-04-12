@@ -31,6 +31,7 @@ final class ZomatoCreateRevisionConduitAPIMethod
       'ERR_REPO_NOT_FOUND' => pht('Repository was not found.'),
       'ERR_PROJECT_NOT_FOUND' => pht('Project was not found.'),
       'ERR_NO_CHANGES' => pht('No changes found between base and head.'),
+      'ERR_NO_REVIEWERS' => pht('No reviewers found. Please contact infra@zomato.com'),
     );
   }
 
@@ -42,6 +43,10 @@ final class ZomatoCreateRevisionConduitAPIMethod
     $repo = $request->getValue('repo');
     $base = $request->getValue('base');
     $head = $viewer->getGithubUsername().':'.$request->getValue('head');
+
+    if (!$viewer->getReviewerPHID()) {
+      throw new ConduitException('ERR_NO_REVIEWERS');
+    }
 
     $repoId = $request->getValue('repoId');
     $projectId = $request->getValue('projectId');
