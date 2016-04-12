@@ -74,7 +74,7 @@ final class DifferentialDiffCreateController extends DifferentialController {
         if (!$repo_url) {
           $repos_json = $authorGithubUser->getAllRepos();
           $repos = json_decode($repos_json, true);
-          $repos_urls = ipull($repos, 'html_url');
+          $repos_urls = ipull($repos, 'url');
           $repo_url = $repos_urls[intval($v_repo)];
         }
 
@@ -226,7 +226,7 @@ final class DifferentialDiffCreateController extends DifferentialController {
     $authorGithubUser->setToken($viewer->getGithubAccessToken());
     $repos_json = $authorGithubUser->getAllRepos();
     $repos = json_decode($repos_json, true);
-    $options = ipull($repos, 'html_url');
+    $options = ipull($repos, 'url');
 
     if ($v_repo_url) {
       $form

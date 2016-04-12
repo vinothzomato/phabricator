@@ -35,12 +35,12 @@ extends Phobject {
 
 	public function getAllRepos(){
 		$url = $this->baseApiURL.'user/repos';
-		return $this->executeCurlGetRequest($url);
+		return $this->executeCurlGetRequest($url);'repos/'.
 	}
 
 	public function getDiff($repo,$base,$head){
-		$url = $repo.'/compare/'.$base.'...'.$head.'.diff';
-		return $this->executeCurlGetRequest($url);
+		$url = $repo.'/compare/'.$base.'...'.$head;
+		return $this->executeCurlGetWithDiffRequest($url);
 	}
 
 	private function executeCurlPostRequest($url, $postData){
@@ -60,6 +60,7 @@ extends Phobject {
 	}
 
 	private function executeCurlPutRequest($url){
+		
 		$ch = curl_init($url);
 		curl_setopt_array($ch, array(
 			CURLOPT_CUSTOMREQUEST => "PUT",
@@ -83,6 +84,21 @@ extends Phobject {
 				'Authorization: token '.$this->token,
 				'User-Agent: Zomato-Phabricator',
 				'Content-Type: application/json'
+				),
+			));
+
+		return curl_exec($ch);
+	}
+
+	private function executeCurlGetWithDiffRequest($url){
+		$ch = curl_init($url);
+		curl_setopt_array($ch, array(
+			CURLOPT_RETURNTRANSFER => TRUE,
+			CURLOPT_HTTPHEADER => array(
+				'Authorization: token '.$this->token,
+				'User-Agent: Zomato-Phabricator',
+				'Content-Type: application/json',
+				'Accept: application/vnd.github.VERSION.diff'
 				),
 			));
 
