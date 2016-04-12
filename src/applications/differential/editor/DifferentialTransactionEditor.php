@@ -500,21 +500,26 @@ final class DifferentialTransactionEditor
               }
 
               $diff = last($diffs);
-              $branch = $diff->getBranch();
-              if (!$branch) {
-                $branch = $diff->getHead();
+              $head = $diff->getHead();
+              if (!$head) {
+                $head = $author->getGithubUsername().':'.$diff->getBranch();
               }
-              else{
-                $branch = $author->getGithubUsername().':'.$branch;
+              $base = $diff->getBase();
+              if (!$base) {
+                $base = 'master';
+              }
+              $repo_url = $diff->getRepo();
+              if (!$repo_url) {
+                throw new Exception(
+                  pht('This revision has no repo. Something has gone quite wrong.'));
               }
 
               if ($branch && strlen($repo)) {
                 $authorGithubUser = new GithubApiUser();
                 $authorGithubUser->setUsername($author->getGithubUsername());
                 $authorGithubUser->setToken($author->getGithubAccessToken());
-                $authorGithubUser->setRepo($repo);
 
-                $pullJson = $authorGithubUser->createPullRequest(PhabricatorEnv::getProductionURI('/D'.$object->getID()),'master',$branch,$actor->getGithubUsername());
+                $pullJson = $authorGithubUser->createPullRequest(PhabricatorEnv::getProductionURI('/D'.$object->getID()),$base,$head,$repo_url);
                 $pullResult = json_decode($pullJson, true);
                 if (isset($pullResult['url'])) {
 
@@ -527,7 +532,6 @@ final class DifferentialTransactionEditor
                   $actorGithubUser = new GithubApiUser();
                   $actorGithubUser->setUsername($actor->getGithubUsername());
                   $actorGithubUser->setToken($actor->getGithubAccessToken());
-                  $actorGithubUser->setRepo($repo);
                   $mergeJson = $actorGithubUser->mergePullRequest($pullResult['url']);
                   $mergeResult = json_decode($mergeJson, true);
                   if (isset($mergeResult['merged']) && $mergeResult['merged']) {

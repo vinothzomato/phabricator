@@ -9,13 +9,13 @@ extends Phobject {
 
 	protected $baseApiURL = "https://api.github.com/";
 
-	public function createPullRequest($title,$base,$head,$user){
+	public function createPullRequest($title,$base,$head,$repo){
 		if (!$title || !$base || !$head) {
 			throw new Exception(
 				pht('Title, Base and Head are required to create pull request'));
 		}
 
-		$url = $this->baseApiURL.'repos/'.$user.'/'.$this->repo.'/pulls';
+		$url = $repo.'/pulls';
 		$postData = array(
 			'title' => $title,
 			'head' => $head,
