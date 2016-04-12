@@ -514,7 +514,7 @@ final class DifferentialTransactionEditor
                   pht('This revision has no repo. Something has gone quite wrong.'));
               }
 
-              if ($branch && strlen($repo)) {
+              if ($head && $base && strlen($repo_url)) {
                 $authorGithubUser = new GithubApiUser();
                 $authorGithubUser->setUsername($author->getGithubUsername());
                 $authorGithubUser->setToken($author->getGithubAccessToken());
