@@ -248,7 +248,7 @@ abstract class AphrontApplicationConfiguration extends Phobject {
       $response->setRequest($request);
 
       $unexpected_output = PhabricatorStartup::endOutputCapture();
-      if ($unexpected_output) {
+      if ($unexpected_output && strlen(trim($unexpected_output))) {
         $unexpected_output = pht(
           "Unexpected output:\n\n%s",
           $unexpected_output);
