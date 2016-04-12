@@ -40,6 +40,7 @@ extends Phobject {
 
 	public function getDiff($repo,$base,$head){
 		$url = $repo.'/compare/'.$base.'...'.$head;
+		return $url;
 		return $this->executeCurlGetWithDiffRequest($url);
 	}
 
