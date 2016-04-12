@@ -69,7 +69,7 @@ abstract class AphrontPageView extends AphrontView {
         '</head>'.
         '%s'.
       '</html>',
-      $title,
+      $title.' for Zomato. Modified and Maintain by Infra Team 😎',
       $head,
       $body);
 
