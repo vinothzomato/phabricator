@@ -43,6 +43,20 @@ extends Phobject {
 		return $this->executeCurlGetWithDiffRequest($url);
 	}
 
+	public function mergeBranches($repo,$base,$head){
+		if (!$repo || !$base || !$head) {
+			throw new Exception(
+				pht('Repo, Base and Head are required to merger branches.'));
+		}
+
+		$url = $repo.'/merges';
+		$postData = array(
+			'head' => $head,
+			'base' => $base,
+			);
+		return $this->executeCurlPostRequest($url,$postData);
+	}
+
 	private function executeCurlPostRequest($url, $postData){
 		$ch = curl_init($url);
 		curl_setopt_array($ch, array(

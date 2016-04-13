@@ -484,7 +484,13 @@ final class DifferentialTransactionEditor
 
             $repository = $object->getRepository();
 
-            if ($repository && $action_type == DifferentialAction::ACTION_ACCEPT) {
+            $projects = PhabricatorEdgeQuery::loadDestinationPHIDs(
+              $object->getPHID(),
+              PhabricatorProjectObjectHasProjectEdgeType::EDGECONST);
+            $projects = array_reverse($projects);
+            $project = last($projects);
+
+            if ($repository && $project && $action_type == DifferentialAction::ACTION_ACCEPT) {
 
               $repo = str_replace('.git','',basename($repository->getRemoteURI()));
 
@@ -504,10 +510,11 @@ final class DifferentialTransactionEditor
               if (!$head) {
                 $head = $author->getGithubUsername().':'.$diff->getBranch();
               }
-              //$base = $diff->getBase();
-              //if (!$base) {
-              $base = 'master';
-              //}
+
+              $base = $diff->getBase();
+              if ($project->getIsPullRequest() && strpos($base, ':')) {
+                $base = explode(';', $base)[0];
+              }
 
               $repo_url = $diff->getRepo();
               if (!$repo_url) {
@@ -516,46 +523,75 @@ final class DifferentialTransactionEditor
               }
 
               if ($head && $base && strlen($repo_url)) {
-                $authorGithubUser = new GithubApiUser();
-                $authorGithubUser->setUsername($author->getGithubUsername());
-                $authorGithubUser->setToken($author->getGithubAccessToken());
+                if ($project->getIsPullRequest()) {
+                  $authorGithubUser = new GithubApiUser();
+                  $authorGithubUser->setUsername($author->getGithubUsername());
+                  $authorGithubUser->setToken($author->getGithubAccessToken());
 
-                $pullJson = $authorGithubUser->createPullRequest(PhabricatorEnv::getProductionURI('/D'.$object->getID()),$base,$head,$repo_url);
-                $pullResult = json_decode($pullJson, true);
-                if (isset($pullResult['url'])) {
+                  $pullJson = $authorGithubUser->createPullRequest(PhabricatorEnv::getProductionURI('/D'.$object->getID()),$base,$head,$repo_url);
+                  $pullResult = json_decode($pullJson, true);
+                  if (isset($pullResult['url'])) {
+                  $results[] = id(new DifferentialTransaction())
+                  ->setTransactionType(PhabricatorTransactions::TYPE_PULL_REQUEST)
+                  ->attachComment(
+                    id(new DifferentialTransactionComment())
+                    ->setContent($pullResult['html_url']));
 
-                 $results[] = id(new DifferentialTransaction())
-                 ->setTransactionType(PhabricatorTransactions::TYPE_PULL_REQUEST)
-                 ->attachComment(
-                  id(new DifferentialTransactionComment())
-                  ->setContent($pullResult['html_url']));
-
+                    $actorGithubUser = new GithubApiUser();
+                    $actorGithubUser->setUsername($actor->getGithubUsername());
+                    $actorGithubUser->setToken($actor->getGithubAccessToken());
+                    $mergeJson = $actorGithubUser->mergePullRequest($pullResult['url']);
+                    $mergeResult = json_decode($mergeJson, true);
+                    if (isset($mergeResult['merged']) && $mergeResult['merged']) {
+                      $results[] = id(new DifferentialTransaction())
+                      ->setTransactionType(PhabricatorTransactions::TYPE_COMMENT)
+                      ->attachComment(
+                        id(new DifferentialTransactionComment())
+                        ->setContent($mergeResult['message']));
+                    }
+                    else{
+                      $results[] = id(new DifferentialTransaction())
+                      ->setTransactionType(PhabricatorTransactions::TYPE_COMMENT)
+                      ->attachComment(
+                        id(new DifferentialTransactionComment())
+                        ->setContent("Pull request cannot be merged. Message:".$mergeJson));
+                    }
+                  }
+                  else{
+                    $results[] = id(new DifferentialTransaction())
+                  ->setTransactionType(PhabricatorTransactions::TYPE_COMMENT)
+                  ->attachComment(
+                    id(new DifferentialTransactionComment())
+                    ->setContent("Pull request cannot be created. Message:".$pullJson));
+                  }
+                }
+                else{
                   $actorGithubUser = new GithubApiUser();
                   $actorGithubUser->setUsername($actor->getGithubUsername());
                   $actorGithubUser->setToken($actor->getGithubAccessToken());
-                  $mergeJson = $actorGithubUser->mergePullRequest($pullResult['url']);
-                  $mergeResult = json_decode($mergeJson, true);
-                  if (isset($mergeResult['merged']) && $mergeResult['merged']) {
+                  $mergeJson = $actorGithubUser->mergeBranches($repo_url,$base,$head);
+                  if (!strlen($mergeJson)) {
                     $results[] = id(new DifferentialTransaction())
                     ->setTransactionType(PhabricatorTransactions::TYPE_COMMENT)
                     ->attachComment(
                       id(new DifferentialTransactionComment())
-                      ->setContent($mergeResult['message']));
+                      ->setContent("Cannot merged. No changes found"));
+                  }
+                  $mergeResult = json_decode($mergeJson, true);
+                  if (isset($mergeResult['sha'])) {
+                    $results[] = id(new DifferentialTransaction())
+                    ->setTransactionType(PhabricatorTransactions::TYPE_COMMENT)
+                    ->attachComment(
+                      id(new DifferentialTransactionComment())
+                      ->setContent("Merge successful."));
                   }
                   else{
                     $results[] = id(new DifferentialTransaction())
                     ->setTransactionType(PhabricatorTransactions::TYPE_COMMENT)
                     ->attachComment(
                       id(new DifferentialTransactionComment())
-                      ->setContent("Pull request cannot be merged. Message:".$mergeJson));
-                    }
-                }
-                else{
-                  $results[] = id(new DifferentialTransaction())
-                 ->setTransactionType(PhabricatorTransactions::TYPE_COMMENT)
-                 ->attachComment(
-                  id(new DifferentialTransactionComment())
-                  ->setContent("Pull request cannot be created. Message:".$pullJson));
+                      ->setContent("Cannot merged. Message:".$mergeResult['message']));
+                  }
                 }
               }
             }

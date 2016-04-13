@@ -51,7 +51,7 @@ final class ZomatoCreateRevisionConduitAPIMethod
 
     $repo = $request->getValue('repo');
     $base = $request->getValue('base');
-    $head = $viewer->getGithubUsername().':'.$request->getValue('head');
+    $head = $request->getValue('head');
 
     if (!$viewer->getReviewerPHID()) {
       throw new ConduitException('ERR_NO_REVIEWERS');
@@ -75,6 +75,9 @@ final class ZomatoCreateRevisionConduitAPIMethod
     if (!$project) {
       throw new ConduitException('ERR_PROJECT_NOT_FOUND');
     }      
+    if ($project->isPullRequest()) {
+      $head = $viewer->getGithubUsername().':'.$head;
+    }
     $fields['projects'] = array($project->getPHID());
 
     $authorGithubUser = new GithubApiUser();
