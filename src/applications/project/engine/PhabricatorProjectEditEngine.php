@@ -251,6 +251,15 @@ final class PhabricatorProjectEditEngine
         ->setConduitDescription(pht('Change the project tag color.'))
         ->setConduitTypeDescription(pht('New project tag color.'))
         ->setValue($object->getColor()),
+      id(new PhabricatorSelectEditField())
+        ->setKey('isPullRequest')
+        ->setLabel(pht('isPullRequest'))
+        ->setTransactionType(PhabricatorProjectTransaction::TYPE_PULL_REQUEST)
+        ->setOptions(array('false','true'))
+        ->setDescription(pht('Project is pull request.'))
+        ->setConduitDescription(pht('Change the project isPullRequest.'))
+        ->setConduitTypeDescription(pht('isPullRequestr.'))
+        ->setValue($object->getIsPullRequest()+1),  
       id(new PhabricatorStringListEditField())
         ->setKey('slugs')
         ->setLabel(pht('Additional Hashtags'))

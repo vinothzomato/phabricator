@@ -36,6 +36,7 @@ final class PhabricatorProjectTransactionEditor
     $types[] = PhabricatorProjectTransaction::TYPE_IMAGE;
     $types[] = PhabricatorProjectTransaction::TYPE_ICON;
     $types[] = PhabricatorProjectTransaction::TYPE_COLOR;
+    $types[] = PhabricatorProjectTransaction::TYPE_PULL_REQUEST;
     $types[] = PhabricatorProjectTransaction::TYPE_LOCKED;
     $types[] = PhabricatorProjectTransaction::TYPE_PARENT;
     $types[] = PhabricatorProjectTransaction::TYPE_MILESTONE;
@@ -67,6 +68,8 @@ final class PhabricatorProjectTransactionEditor
         return $object->getIcon();
       case PhabricatorProjectTransaction::TYPE_COLOR:
         return $object->getColor();
+      case PhabricatorProjectTransaction::TYPE_COLOR:
+        return (int)$object->getIsPullRequest();
       case PhabricatorProjectTransaction::TYPE_LOCKED:
         return (int)$object->getIsMembershipLocked();
       case PhabricatorProjectTransaction::TYPE_HASWORKBOARD:
@@ -101,6 +104,7 @@ final class PhabricatorProjectTransactionEditor
       case PhabricatorProjectTransaction::TYPE_DEFAULT_SORT:
       case PhabricatorProjectTransaction::TYPE_DEFAULT_FILTER:
         return $xaction->getNewValue();
+      case PhabricatorProjectTransaction::TYPE_PULL_REQUEST:  
       case PhabricatorProjectTransaction::TYPE_HASWORKBOARD:
         return (int)$xaction->getNewValue();
       case PhabricatorProjectTransaction::TYPE_BACKGROUND:
@@ -142,6 +146,9 @@ final class PhabricatorProjectTransactionEditor
       case PhabricatorProjectTransaction::TYPE_COLOR:
         $object->setColor($xaction->getNewValue());
         return;
+      case PhabricatorProjectTransaction::TYPE_PULL_REQUEST:
+        $object->setIsPullRequest($xaction->getNewValue());
+        return;  
       case PhabricatorProjectTransaction::TYPE_LOCKED:
         $object->setIsMembershipLocked($xaction->getNewValue());
         return;
@@ -204,6 +211,7 @@ final class PhabricatorProjectTransactionEditor
       case PhabricatorProjectTransaction::TYPE_IMAGE:
       case PhabricatorProjectTransaction::TYPE_ICON:
       case PhabricatorProjectTransaction::TYPE_COLOR:
+      case PhabricatorProjectTransaction::TYPE_PULL_REQUEST:
       case PhabricatorProjectTransaction::TYPE_LOCKED:
       case PhabricatorProjectTransaction::TYPE_PARENT:
       case PhabricatorProjectTransaction::TYPE_MILESTONE:
@@ -501,6 +509,7 @@ final class PhabricatorProjectTransactionEditor
       case PhabricatorProjectTransaction::TYPE_STATUS:
       case PhabricatorProjectTransaction::TYPE_IMAGE:
       case PhabricatorProjectTransaction::TYPE_ICON:
+      case PhabricatorProjectTransaction::TYPE_PULL_REQUEST:
       case PhabricatorProjectTransaction::TYPE_COLOR:
         PhabricatorPolicyFilter::requireCapability(
           $this->requireActor(),

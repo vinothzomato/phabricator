@@ -25,6 +25,7 @@ final class PhabricatorProject extends PhabricatorProjectDAO
   protected $editPolicy;
   protected $joinPolicy;
   protected $isMembershipLocked;
+  protected $isPullRequest;
 
   protected $parentProjectPHID;
   protected $hasWorkboard;
@@ -81,6 +82,7 @@ final class PhabricatorProject extends PhabricatorProjectDAO
       ->setEditPolicy($edit_policy)
       ->setJoinPolicy($join_policy)
       ->setIsMembershipLocked(0)
+      ->setIsPullRequest(0)
       ->attachMemberPHIDs(array())
       ->attachSlugs(array())
       ->setHasWorkboard(0)
@@ -208,6 +210,7 @@ final class PhabricatorProject extends PhabricatorProjectDAO
         'status' => 'text32',
         'primarySlug' => 'text128?',
         'isMembershipLocked' => 'bool',
+        'isPullRequest' => 'bool',
         'profileImagePHID' => 'phid?',
         'icon' => 'text32',
         'color' => 'text32',

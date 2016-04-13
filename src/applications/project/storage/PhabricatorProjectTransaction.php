@@ -6,6 +6,7 @@ final class PhabricatorProjectTransaction
   const TYPE_NAME       = 'project:name';
   const TYPE_SLUGS      = 'project:slugs';
   const TYPE_STATUS     = 'project:status';
+  const TYPE_PULL_REQUEST     = 'project:isPullRequest';
   const TYPE_IMAGE      = 'project:image';
   const TYPE_ICON       = 'project:icon';
   const TYPE_COLOR      = 'project:color';
