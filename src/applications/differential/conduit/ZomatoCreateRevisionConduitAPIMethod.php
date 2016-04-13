@@ -12,6 +12,14 @@ final class ZomatoCreateRevisionConduitAPIMethod
   }
 
   protected function defineParamTypes() {
+    $status_const = $this->formatStringConstants(
+      array(
+        'none',
+        'skip',
+        'okay',
+        'warn',
+        'fail',
+        ));
     return array(
       'fields' => 'required dict',
       'repo' => 'required string',
@@ -19,6 +27,7 @@ final class ZomatoCreateRevisionConduitAPIMethod
       'head' => 'required string',
       'repoId' => 'required string',
       'projectId' => 'required string',
+      'lintStatus' => 'required '.$status_const,
     );
   }
 
@@ -148,6 +157,27 @@ final class ZomatoCreateRevisionConduitAPIMethod
       ->setViewer($viewer)
       ->withIDs(array($diff_id))
       ->executeOne();
+
+      switch ($request->getValue('lintStatus')) {
+        case 'skip':
+        $lint_status = DifferentialLintStatus::LINT_SKIP;
+        break;
+        case 'okay':
+        $lint_status = DifferentialLintStatus::LINT_OKAY;
+        break;
+        case 'warn':
+        $lint_status = DifferentialLintStatus::LINT_WARN;
+        break;
+        case 'fail':
+        $lint_status = DifferentialLintStatus::LINT_FAIL;
+        break;
+        case 'none':
+        default:
+        $lint_status = DifferentialLintStatus::LINT_NONE;
+        break;
+      }
+      $newDiff->setLintStatus($lint_status);
+      $newDiff->save();
     }
 
     $fields['reviewerPHIDs'] = array($viewer->getReviewerPHID());
