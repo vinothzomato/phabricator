@@ -259,7 +259,7 @@ final class PhabricatorProjectEditEngine
         ->setDescription(pht('Project is pull request.'))
         ->setConduitDescription(pht('Change the project isPullRequest.'))
         ->setConduitTypeDescription(pht('isPullRequestr.'))
-        ->setValue($object->getIsPullRequest()+1),  
+        ->setValue($object->getIsPullRequest()),  
       id(new PhabricatorStringListEditField())
         ->setKey('slugs')
         ->setLabel(pht('Additional Hashtags'))
