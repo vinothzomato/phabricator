@@ -255,7 +255,7 @@ final class PhabricatorProjectEditEngine
         ->setKey('isPullRequest')
         ->setLabel(pht('isPullRequest'))
         ->setTransactionType(PhabricatorProjectTransaction::TYPE_PULL_REQUEST)
-        ->setOptions(array('false','true'))
+        ->setOptions(array('False','True'))
         ->setDescription(pht('Project is pull request.'))
         ->setConduitDescription(pht('Change the project isPullRequest.'))
         ->setConduitTypeDescription(pht('isPullRequestr.'))
