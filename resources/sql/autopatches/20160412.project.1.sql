@@ -1,0 +1,2 @@
+ALTER TABLE {$NAMESPACE}_project.project
+  ADD isPullRequest TINYINT(1) NOT NULL DEFAULT 0;
