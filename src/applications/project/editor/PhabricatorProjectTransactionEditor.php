@@ -68,7 +68,7 @@ final class PhabricatorProjectTransactionEditor
         return $object->getIcon();
       case PhabricatorProjectTransaction::TYPE_COLOR:
         return $object->getColor();
-      case PhabricatorProjectTransaction::TYPE_COLOR:
+      case PhabricatorProjectTransaction::TYPE_PULL_REQUEST:
         return (int)$object->getIsPullRequest();
       case PhabricatorProjectTransaction::TYPE_LOCKED:
         return (int)$object->getIsMembershipLocked();
