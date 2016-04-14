@@ -5,6 +5,7 @@ abstract class PhabricatorProjectUserListView extends AphrontView {
   private $project;
   private $userPHIDs;
   private $limit;
+  private $href;
   private $background;
 
   public function setProject(PhabricatorProject $project) {
@@ -14,6 +15,11 @@ abstract class PhabricatorProjectUserListView extends AphrontView {
 
   public function getProject() {
     return $this->project;
+  }
+
+  public function setHref($href) {
+    $this->href = $href;
+    return $this;
   }
 
   public function setUserPHIDs(array $user_phids) {
@@ -120,7 +126,16 @@ abstract class PhabricatorProjectUserListView extends AphrontView {
     $header = id(new PHUIHeaderView())
       ->setHeader($header_text);
 
-    if ($limit) {
+    if ($limit && $href) {
+      $header->addActionLink(
+        id(new PHUIButtonView())
+          ->setTag('a')
+          ->setIcon(
+            id(new PHUIIconView())
+              ->setIcon('fa-list-ul'))
+          ->setText(pht('View All'))
+          ->setHref("/project/{$href}/{$id}/"));
+    } else if ($limit) {
       $header->addActionLink(
         id(new PHUIButtonView())
           ->setTag('a')

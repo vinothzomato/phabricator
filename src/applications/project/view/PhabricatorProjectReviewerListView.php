@@ -3,6 +3,10 @@
 final class PhabricatorProjectReviewerListView
   extends PhabricatorProjectUserListView {
 
+  function __construct() {
+    $this->setHref('reviewers');
+  }  
+
   protected function canEditList() {
     $viewer = $this->getUser();
     $project = $this->getProject();
