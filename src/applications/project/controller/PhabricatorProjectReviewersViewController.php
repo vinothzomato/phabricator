@@ -29,7 +29,7 @@ final class PhabricatorProjectReviewersViewController
       ->setHeaderText($title)
       ->addPropertyList($properties);
 
-    $reviewer_list = id(new PhabricatorProjectMemberListView())
+    $reviewer_list = id(new PhabricatorProjectReviewerListView())
       ->setUser($viewer)
       ->setProject($project)
       ->setUserPHIDs($project->getReviewerPHIDs());
@@ -40,7 +40,7 @@ final class PhabricatorProjectReviewersViewController
       ->setUserPHIDs($project->getWatcherPHIDs());
 
     $nav = $this->getProfileMenu();
-    $nav->selectFilter(PhabricatorProject::PANEL_MEMBERS);
+    $nav->selectFilter(PhabricatorProject::PANEL_REVIEWERS);
 
     $crumbs = $this->buildApplicationCrumbs();
     $crumbs->addTextCrumb(pht('Reviewers'));
