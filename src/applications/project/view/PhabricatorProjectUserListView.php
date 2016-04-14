@@ -62,6 +62,7 @@ abstract class PhabricatorProjectUserListView extends AphrontView {
       ->setNoDataString($no_data);
 
     $limit = $this->getLimit();
+    $href = $this->href;
 
     // If we're showing everything, show oldest to newest. If we're showing
     // only a slice, show newest to oldest.
