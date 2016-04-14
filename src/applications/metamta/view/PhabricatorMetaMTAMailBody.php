@@ -182,10 +182,7 @@ final class PhabricatorMetaMTAMailBody extends Phobject {
    * @task render
    */
   public function render() {
-    $header = $this->getHtmlHead();
-    $footer = $this->getHtmlFooter();
-    $bodyHTML = implode("\n\n", $this->sections)."\n";
-    return $header."\n".$bodyHTML."\n".$footer;
+    return implode("\n\n", $this->sections)."\n";
   }
 
   public function renderHTML() {

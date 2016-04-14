@@ -111,6 +111,7 @@ final class PhabricatorEmailLoginController
             ->setSubject(pht('[Phabricator for Zomato] Password Reset'))
             ->setForceDelivery(true)
             ->addRawTos(array($target_email->getAddress()))
+            ->setBody($body->render())
             ->setHTMLBody($body->renderHTML())
             ->saveAndSend();
 

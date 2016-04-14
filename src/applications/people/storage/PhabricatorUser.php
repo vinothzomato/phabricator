@@ -641,6 +641,7 @@ final class PhabricatorUser
       ->addTos(array($this->getPHID()))
       ->setForceDelivery(true)
       ->setSubject(pht('[Phabricator for Zomato] Welcome to Phabricator'))
+      ->setBody($body->render())
       ->setHTMLBody($body->renderHTML())
       ->saveAndSend();
   }
@@ -693,6 +694,7 @@ final class PhabricatorUser
       ->addTos(array($this->getPHID()))
       ->setForceDelivery(true)
       ->setSubject(pht('[Phabricator for Zomato] Username Changed'))
+      ->setBody($body->render())
       ->setHTMLBody($body->renderHTML())
       ->saveAndSend();
   }

@@ -50,6 +50,7 @@ final class PhabricatorPeopleApproveController
         ->addCCs(array($admin->getPHID()))
         ->setSubject('[Phabricator for Zomato] '.$title)
         ->setForceDelivery(true)
+        ->setBody($body->render())
         ->setHTMLBody($body->renderHTML())
         ->saveAndSend();
 
