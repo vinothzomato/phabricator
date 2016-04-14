@@ -616,7 +616,7 @@ final class PhabricatorAuthRegisterController
   }
 
   private function sendWaitingForApprovalEmail(PhabricatorUser $user) {
-    $title = '[Phabricator] '.pht(
+    $title = '[Phabricator for Zomato] '.pht(
       'New User "%s" Awaiting Approval',
       $user->getUsername());
 
