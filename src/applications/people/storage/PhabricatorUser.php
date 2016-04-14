@@ -643,7 +643,7 @@ final class PhabricatorUser
     $mail = id(new PhabricatorMetaMTAMail())
       ->addTos(array($this->getPHID()))
       ->setForceDelivery(true)
-      ->setSubject(pht('[Phabricator] Welcome to Phabricator'))
+      ->setSubject(pht('[Phabricator for Zomato] Welcome to Phabricator'))
       ->setBody($body)
       ->saveAndSend();
   }
@@ -692,7 +692,7 @@ final class PhabricatorUser
     $mail = id(new PhabricatorMetaMTAMail())
       ->addTos(array($this->getPHID()))
       ->setForceDelivery(true)
-      ->setSubject(pht('[Phabricator] Username Changed'))
+      ->setSubject(pht('[Phabricator for Zomato] Username Changed'))
       ->setBody($body)
       ->saveAndSend();
   }

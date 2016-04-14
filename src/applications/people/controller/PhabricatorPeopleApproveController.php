@@ -45,7 +45,7 @@ final class PhabricatorPeopleApproveController
       $mail = id(new PhabricatorMetaMTAMail())
         ->addTos(array($user->getPHID()))
         ->addCCs(array($admin->getPHID()))
-        ->setSubject('[Phabricator] '.$title)
+        ->setSubject('[Phabricator for Zomato] '.$title)
         ->setForceDelivery(true)
         ->setBody($body)
         ->saveAndSend();
