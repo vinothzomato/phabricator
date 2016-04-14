@@ -257,7 +257,7 @@ final class PhabricatorProjectQuery
 
     $material_type = PhabricatorProjectMaterializedMemberEdgeType::EDGECONST;
     $watcher_type = PhabricatorObjectHasWatcherEdgeType::EDGECONST;
-    $reviewer_type = PhabricatorProjectMaterializedReviewerEdgeType::EDGECONST;
+    $reviewer_type = PhabricatorProjectProjectHasReviewerEdgeType::EDGECONST;
 
     $types = array();
     $types[] = $material_type;
