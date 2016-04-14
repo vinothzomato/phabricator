@@ -142,9 +142,6 @@ final class PhabricatorMailImplementationSendGridAdapter
       $params);
     $future->setMethod('POST');
 
-    phlog($params['html']);
-    phlog($params['text']);
-
     list($body) = $future->resolvex();
 
     $response = null;
