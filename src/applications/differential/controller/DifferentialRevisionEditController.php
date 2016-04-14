@@ -28,19 +28,8 @@ final class DifferentialRevisionEditController
         return new Aphront404Response();
       }
     } else {
-      $reviewers = array();
-      if ($viewer->getReviewerPHID()) {
-        $reviewer = new DifferentialReviewer(
-          $viewer->getReviewerPHID(),
-          array(
-            'status' => DifferentialReviewerStatus::STATUS_ADDED,
-            ));
-        if ($reviewer) {
-          $reviewers[] = $reviewer;
-        }
-      }
       $revision = DifferentialRevision::initializeNewRevision($viewer);
-      $revision->attachReviewerStatus($reviewers);
+      $revision->attachReviewerStatus(array());
     }
 
     $diff_id = $request->getInt('diffID');

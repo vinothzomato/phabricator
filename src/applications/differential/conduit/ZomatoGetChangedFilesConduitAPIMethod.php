@@ -41,10 +41,6 @@ final class ZomatoGetChangedFilesConduitAPIMethod
     $base = $request->getValue('base');
     $head = $request->getValue('head');
 
-    if (!$viewer->getReviewerPHID()) {
-      throw new ConduitException('ERR_NO_REVIEWERS');
-    }
-
     $repoId = $request->getValue('repoId');
     $projectId = $request->getValue('projectId');
     $repository = id(new PhabricatorRepositoryQuery())
@@ -127,63 +123,6 @@ final class ZomatoGetChangedFilesConduitAPIMethod
         }
       }
     }
-
-    if (!$newDiff) {
-      $call = new ConduitCall(
-        'differential.createrawdiff',
-        array(
-          'diff' => $diff,
-          'repositoryPHID' => $repository->getPHID(),
-          'repo' => $repo,
-          'base' => $base,
-          'head' => $head,
-          'viewPolicy' => 'users',
-          ));
-      $call->setUser($viewer);
-      $result = $call->execute();
-
-      $diff_id = $result['id'];
-
-      $newDiff = id(new DifferentialDiffQuery())
-      ->setViewer($viewer)
-      ->withIDs(array($diff_id))
-      ->executeOne();
-
-      switch ($request->getValue('lintStatus')) {
-        case 'skip':
-        $lint_status = DifferentialLintStatus::LINT_SKIP;
-        break;
-        case 'okay':
-        $lint_status = DifferentialLintStatus::LINT_OKAY;
-        break;
-        case 'warn':
-        $lint_status = DifferentialLintStatus::LINT_WARN;
-        break;
-        case 'fail':
-        $lint_status = DifferentialLintStatus::LINT_FAIL;
-        break;
-        case 'none':
-        default:
-        $lint_status = DifferentialLintStatus::LINT_NONE;
-        break;
-      }
-      $newDiff->setLintStatus($lint_status);
-      $newDiff->save();
-    }
-
-    $fields['reviewerPHIDs'] = array($viewer->getReviewerPHID());
-    $fields['ccPHIDs'] = array($viewer->getReviewerPHID());
-
-    $call = new ConduitCall(
-     'differential.createrevision',
-     array(
-      'fields' => $fields,
-      'diffid' => $newDiff->getID(),
-      ));
-    $call->setUser($viewer);
-    $result = $call->execute();
-
-    return $result;
+    return array();
   }
-
 }

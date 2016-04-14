@@ -40,7 +40,7 @@ final class ZomatoCreateRevisionConduitAPIMethod
       'ERR_REPO_NOT_FOUND' => pht('Repository was not found.'),
       'ERR_PROJECT_NOT_FOUND' => pht('Project was not found.'),
       'ERR_NO_CHANGES' => pht('No changes found between base and head.'),
-      'ERR_NO_REVIEWERS' => pht('No reviewers found. Please contact infra@zomato.com'),
+      'ERR_NO_REVIEWERS' => pht('No reviewers found in your project. Please contact infra@zomato.com'),
     );
   }
 
@@ -53,12 +53,8 @@ final class ZomatoCreateRevisionConduitAPIMethod
     $base = $request->getValue('base');
     $head = $request->getValue('head');
 
-    if (!$viewer->getReviewerPHID()) {
-      throw new ConduitException('ERR_NO_REVIEWERS');
-    }
 
     $repoId = $request->getValue('repoId');
-    $projectId = $request->getValue('projectId');
     $repository = id(new PhabricatorRepositoryQuery())
     ->setViewer($viewer)
     ->withIDs(array($repoId))
@@ -68,9 +64,11 @@ final class ZomatoCreateRevisionConduitAPIMethod
     } 
     $fields['repository'] = array($repository->getPHID());
 
+    $projectId = $request->getValue('projectId');
     $project = id(new PhabricatorProjectQuery())
     ->setViewer($viewer)
     ->withIDs(array($projectId))
+    ->needReviewers(true)
     ->executeOne();
     if (!$project) {
       throw new ConduitException('ERR_PROJECT_NOT_FOUND');
@@ -79,6 +77,11 @@ final class ZomatoCreateRevisionConduitAPIMethod
       $head = $viewer->getGithubUsername().':'.$head;
     }
     $fields['projects'] = array($project->getPHID());
+
+    $reviewers = $project->getReviewers();
+    if (!$reviewers || empty($reviewers)) {
+      throw new ConduitException('ERR_NO_REVIEWERS');
+    }
 
     $authorGithubUser = new GithubApiUser();
     $authorGithubUser->setUsername($viewer->getGithubUsername());
@@ -183,13 +186,14 @@ final class ZomatoCreateRevisionConduitAPIMethod
       $newDiff->save();
     }
 
-    $fields['reviewerPHIDs'] = array($viewer->getReviewerPHID());
-    $fields['ccPHIDs'] = array($viewer->getReviewerPHID());
+    $fields['reviewerPHIDs'] = $reviewers;
+    $fields['ccPHIDs'] = $reviewers;
 
     $call = new ConduitCall(
      'differential.createrevision',
      array(
       'fields' => $fields,
+      'projectId' => $projectId,
       'diffid' => $newDiff->getID(),
       ));
     $call->setUser($viewer);

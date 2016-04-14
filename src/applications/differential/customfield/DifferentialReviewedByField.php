@@ -39,7 +39,7 @@ final class DifferentialReviewedByField
       switch ($reviewer->getStatus()) {
         case DifferentialReviewerStatus::STATUS_ACCEPTED:
         case DifferentialReviewerStatus::STATUS_ACCEPTED_OLDER:
-          $phids[] = $reviewer->getReviewerPHID();
+          $phids[] = $reviewer->getPHID();
           break;
       }
     }

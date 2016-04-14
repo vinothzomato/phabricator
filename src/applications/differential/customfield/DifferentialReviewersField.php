@@ -27,7 +27,7 @@ final class DifferentialReviewersField
   public function getNewValueForApplicationTransactions() {
     $specs = array();
     foreach ($this->getValue() as $reviewer) {
-      $specs[$reviewer->getReviewerPHID()] = array(
+      $specs[$reviewer->getPHID()] = array(
         'data' => $reviewer->getEdgeData(),
       );
     }

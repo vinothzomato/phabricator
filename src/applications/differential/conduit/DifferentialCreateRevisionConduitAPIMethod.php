@@ -16,6 +16,7 @@ final class DifferentialCreateRevisionConduitAPIMethod
       // TODO: Arcanist passes this; prevent fatals after D4191 until Conduit
       // version 7 or newer.
       'user'   => 'ignored',
+      'projectId'   => 'required string',
       'diffid' => 'required diffid',
       'fields' => 'required dict',
     );
@@ -28,6 +29,8 @@ final class DifferentialCreateRevisionConduitAPIMethod
   protected function defineErrorTypes() {
     return array(
       'ERR_BAD_DIFF' => pht('Bad diff ID.'),
+      'ERR_PROJECT_NOT_FOUND' => pht('Project was not found.'),
+      'ERR_NO_REVIEWERS' => pht('No reviewers found in your project. Please contact infra@zomato.com'),
     );
   }
 
@@ -42,10 +45,25 @@ final class DifferentialCreateRevisionConduitAPIMethod
       throw new ConduitException('ERR_BAD_DIFF');
     }
 
-    $reviewers = array();
-    if ($viewer->getReviewerPHID()) {
+    $projectId = $request->getValue('projectId');
+    $project = id(new PhabricatorProjectQuery())
+    ->setViewer($viewer)
+    ->withIDs(array($projectId))
+    ->needReviewers(true)
+    ->executeOne();
+    if (!$project) {
+      throw new ConduitException('ERR_PROJECT_NOT_FOUND');
+    }   
+
+    $reviewers = $project->getReviewerPHIDS();
+    if (!$reviewers || empty($reviewers)) {
+      throw new ConduitException('ERR_NO_REVIEWERS');
+    }
+
+    $diff_reviewers = array();
+    foreach ($reviewers as $reviewerPHID) {
       $reviewer = new DifferentialReviewer(
-        $viewer->getReviewerPHID(),
+        $reviewerPHID,
         array(
           'status' => DifferentialReviewerStatus::STATUS_ADDED,
           ));
@@ -53,8 +71,9 @@ final class DifferentialCreateRevisionConduitAPIMethod
         $reviewers[] = $reviewer;
       }
     }
+
     $revision = DifferentialRevision::initializeNewRevision($viewer);
-    $revision->attachReviewerStatus($reviewers);
+    $revision->attachReviewerStatus($diff_reviewers);
 
     $this->applyFieldEdit(
       $request,
