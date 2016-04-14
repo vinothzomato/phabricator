@@ -55,7 +55,7 @@ final class DifferentialCreateRevisionConduitAPIMethod
       throw new ConduitException('ERR_PROJECT_NOT_FOUND');
     }   
 
-    $reviewers = $project->getReviewerPHIDS();
+    $reviewers = $project->getReviewerPHIDs();
     if (!$reviewers || empty($reviewers)) {
       throw new ConduitException('ERR_NO_REVIEWERS');
     }

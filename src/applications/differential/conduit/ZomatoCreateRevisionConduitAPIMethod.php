@@ -78,7 +78,7 @@ final class ZomatoCreateRevisionConduitAPIMethod
     }
     $fields['projects'] = array($project->getPHID());
 
-    $reviewers = $project->getReviewers();
+    $reviewers = $project->getReviewerPHIDs();
     if (!$reviewers || empty($reviewers)) {
       throw new ConduitException('ERR_NO_REVIEWERS');
     }
