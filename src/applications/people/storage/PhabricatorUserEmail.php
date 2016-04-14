@@ -171,25 +171,17 @@ final class PhabricatorUserEmail extends PhabricatorUserDAO {
     $address = $this->getAddress();
     $link = PhabricatorEnv::getProductionURI($this->getVerificationURI());
 
-
-    $is_serious = PhabricatorEnv::getEnvConfig('phabricator.serious-business');
-
-    $signature = null;
-    if (!$is_serious) {
-      $signature = pht("Get Well Soon,\nInfra Team,\n Zomato");
-    }
-
     $body = new PhabricatorMetaMTAMailBody();
 
-    $body->addRawSection(sprintf(
-      "%s\n\n%s\n\n  %s\n\n%s",
-      pht('Hi %s', $username),
+    $body->addRawSection(
       pht(
-        'Please verify that you own this email address (%s) by '.
-        'clicking this link:',
-        $address),
-      $link,
-      $signature));
+        "%s\n\n%s\n\n  %s",
+        pht('Hi %s', $username),
+        pht(
+          'Please verify that you own this email address (%s) by '.
+          'clicking this link:',
+          $address),
+        $link));
 
     id(new PhabricatorMetaMTAMail())
       ->addRawTos(array($address))
