@@ -113,7 +113,7 @@ final class PhabricatorEmailLoginController
             ->addRawTos(array($target_email->getAddress()))
             ->setBody($body->render())
             ->setHTMLBody($body->renderHTML())
-            ->setIsBulk(true);
+            ->setIsBulk(true)
             ->saveAndSend();
 
           return $this->newDialog()
