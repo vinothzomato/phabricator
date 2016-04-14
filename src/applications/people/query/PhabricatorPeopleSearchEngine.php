@@ -259,12 +259,12 @@ final class PhabricatorPeopleSearchEngine
               ->setHref($this->getApplicationURI('approve/'.$user_id.'/')));
         }
         else if($user_id !== $viewer->getID()){
-          $item->addAction(
-            id(new PHUIListItemView())
-              ->setIcon('fa-cog')
-              ->setName($is_reviewer ? pht('Remove from Review') : pht('Add to Review'))
-              ->setWorkflow(true)
-              ->setHref($this->getApplicationURI('reviewer/'.$user_id.'/')));
+          //$item->addAction(
+          //  id(new PHUIListItemView())
+          //    ->setIcon('fa-cog')
+          //    ->setName($is_reviewer ? pht('Remove from Review') : pht('Add to Review'))
+          //    ->setWorkflow(true)
+          //    ->setHref($this->getApplicationURI('reviewer/'.$user_id.'/')));
         }
       }
 

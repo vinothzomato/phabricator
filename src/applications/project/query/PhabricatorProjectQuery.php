@@ -6,6 +6,7 @@ final class PhabricatorProjectQuery
   private $ids;
   private $phids;
   private $memberPHIDs;
+  private $reviewerPHIDs;
   private $watcherPHIDs;
   private $slugs;
   private $slugNormals;
@@ -34,6 +35,7 @@ final class PhabricatorProjectQuery
 
   private $needSlugs;
   private $needMembers;
+  private $needReviewers;
   private $needAncestorMembers;
   private $needWatchers;
   private $needImages;
@@ -60,6 +62,11 @@ final class PhabricatorProjectQuery
 
   public function withMemberPHIDs(array $member_phids) {
     $this->memberPHIDs = $member_phids;
+    return $this;
+  }
+
+  public function withReviewerPHIDs(array $reviewer_phids) {
+    $this->reviewerPHIDs = $reviewer_phids;
     return $this;
   }
 
@@ -127,6 +134,11 @@ final class PhabricatorProjectQuery
 
   public function needMembers($need_members) {
     $this->needMembers = $need_members;
+    return $this;
+  }
+
+  public function needReviewers($need_reviewers) {
+    $this->needReviewers = $need_reviewers;
     return $this;
   }
 
@@ -245,11 +257,15 @@ final class PhabricatorProjectQuery
 
     $material_type = PhabricatorProjectMaterializedMemberEdgeType::EDGECONST;
     $watcher_type = PhabricatorObjectHasWatcherEdgeType::EDGECONST;
+    $reviewer_type = PhabricatorProjectMaterializedReviewerEdgeType::EDGECONST;
 
     $types = array();
     $types[] = $material_type;
     if ($this->needWatchers) {
       $types[] = $watcher_type;
+    }
+    if ($this->needReviewers) {
+      $types[] = $reviewer_type;
     }
 
     $all_graph = $this->getAllReachableAncestors($projects);
@@ -278,6 +294,7 @@ final class PhabricatorProjectQuery
 
     $need_all_edges =
       $this->needMembers ||
+      $this->needReviewers ||
       $this->needWatchers ||
       $this->needAncestorMembers;
 
@@ -323,6 +340,16 @@ final class PhabricatorProjectQuery
 
       if ($this->needMembers || $this->needAncestorMembers) {
         $project->attachMemberPHIDs($member_phids);
+      }
+
+      if ($this->needReviewers) {
+        $reviewer_phids = $edge_query->getDestinationPHIDs(
+          array($project_phid),
+          array($reviewer_type));
+        $project->attachReviewerPHIDs($reviewer_phids);
+        $project->setIsUserReviewer(
+          $viewer_phid,
+          in_array($viewer_phid, $reviewer_phids));
       }
 
       if ($this->needWatchers) {
@@ -441,6 +468,13 @@ final class PhabricatorProjectQuery
         $conn,
         'e.dst IN (%Ls)',
         $this->memberPHIDs);
+    }
+
+    if ($this->reviewerPHIDs !== null) {
+      $where[] = qsprintf(
+        $conn,
+        'r.dst IN (%Ls)',
+        $this->reviewerPHIDs);
     }
 
     if ($this->watcherPHIDs !== null) {
@@ -563,7 +597,7 @@ final class PhabricatorProjectQuery
   }
 
   protected function shouldGroupQueryResultRows() {
-    if ($this->memberPHIDs || $this->watcherPHIDs || $this->nameTokens) {
+    if ($this->memberPHIDs || $this->watcherPHIDs || $this->reviewerPHIDs || $this->nameTokens) {
       return true;
     }
     return parent::shouldGroupQueryResultRows();
@@ -578,6 +612,14 @@ final class PhabricatorProjectQuery
         'JOIN %T e ON e.src = p.phid AND e.type = %d',
         PhabricatorEdgeConfig::TABLE_NAME_EDGE,
         PhabricatorProjectMaterializedMemberEdgeType::EDGECONST);
+    }
+
+    if ($this->reviewerPHIDs !== null) {
+      $joins[] = qsprintf(
+        $conn,
+        'JOIN %T r ON r.src = p.phid AND r.type = %d',
+        PhabricatorEdgeConfig::TABLE_NAME_EDGE,
+        PhabricatorProjectMaterializedReviewerEdgeType::EDGECONST);
     }
 
     if ($this->watcherPHIDs !== null) {

@@ -40,9 +40,11 @@ final class PhabricatorProject extends PhabricatorProjectDAO
   protected $properties = array();
 
   private $memberPHIDs = self::ATTACHABLE;
+  private $reviewerPHIDs = self::ATTACHABLE;
   private $watcherPHIDs = self::ATTACHABLE;
   private $sparseWatchers = self::ATTACHABLE;
   private $sparseMembers = self::ATTACHABLE;
+  private $sparseReviewers = self::ATTACHABLE;
   private $customFields = self::ATTACHABLE;
   private $profileImageFile = self::ATTACHABLE;
   private $slugs = self::ATTACHABLE;
@@ -54,6 +56,7 @@ final class PhabricatorProject extends PhabricatorProjectDAO
   const PANEL_POINTS = 'project.points';
   const PANEL_WORKBOARD = 'project.workboard';
   const PANEL_MEMBERS = 'project.members';
+  const PANEL_REVIEWERS = 'project.reviewers';
   const PANEL_MANAGE = 'project.manage';
   const PANEL_MILESTONES = 'project.milestones';
   const PANEL_SUBPROJECTS = 'project.subprojects';
@@ -84,6 +87,7 @@ final class PhabricatorProject extends PhabricatorProjectDAO
       ->setIsMembershipLocked(0)
       ->setIsPullRequest(0)
       ->attachMemberPHIDs(array())
+      ->attachReviewerPHIDs(array())
       ->attachSlugs(array())
       ->setHasWorkboard(0)
       ->setHasMilestones(0)
@@ -199,6 +203,21 @@ final class PhabricatorProject extends PhabricatorProjectDAO
     return $this;
   }
 
+  public function isUserReviewer($user_phid) {
+    if ($this->reviewerPHIDs !== self::ATTACHABLE) {
+      return in_array($user_phid, $this->reviewerPHIDs);
+    }
+    return $this->assertAttachedKey($this->sparseReviewers, $user_phid);
+  }
+
+  public function setIsUserReviewer($user_phid, $is_reviewer) {
+    if ($this->sparseReviewers === self::ATTACHABLE) {
+      $this->sparseReviewers = array();
+    }
+    $this->sparseReviewers[$user_phid] = $is_reviewer;
+    return $this;
+  }
+
   protected function getConfiguration() {
     return array(
       self::CONFIG_AUX_PHID => true,
@@ -263,6 +282,15 @@ final class PhabricatorProject extends PhabricatorProjectDAO
 
   public function getMemberPHIDs() {
     return $this->assertAttached($this->memberPHIDs);
+  }
+
+  public function attachReviewerPHIDs(array $phids) {
+    $this->reviewerPHIDs = $phids;
+    return $this;
+  }
+
+  public function getReviewerPHIDs() {
+    return $this->assertAttached($this->reviewerPHIDs);
   }
 
   public function isArchived() {
