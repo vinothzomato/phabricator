@@ -641,7 +641,7 @@ final class PhabricatorMetaMTAMail
           $html_emails);
       }
 
-      if ($html_emails && isset($params['html-body'])) {
+      if (isset($params['html-body'])) {
         $mailer->setHTMLBody($params['html-body']);
       }
 
