@@ -85,12 +85,12 @@ final class PhabricatorEmailLoginController
             PhabricatorAuthSessionEngine::ONETIME_RESET);
 
           if ($is_serious) {
-            $body = pht(
+            $body_content = pht(
               "You can use this link to reset your Phabricator password:".
               "\n\n  %s\n",
               $uri);
           } else {
-            $body = pht(
+            $body_content = pht(
               "Condolences on forgetting your password. You can use this ".
               "link to reset it:\n\n".
               "  %s\n\n".
@@ -103,11 +103,15 @@ final class PhabricatorEmailLoginController
 
           }
 
+          $body = new PhabricatorMetaMTAMailBody();
+
+          $body->addRawSection($body_content);
+
           $mail = id(new PhabricatorMetaMTAMail())
             ->setSubject(pht('[Phabricator for Zomato] Password Reset'))
             ->setForceDelivery(true)
             ->addRawTos(array($target_email->getAddress()))
-            ->setBody($body)
+            ->setBody($body->render())
             ->saveAndSend();
 
           return $this->newDialog()

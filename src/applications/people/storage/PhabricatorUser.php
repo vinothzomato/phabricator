@@ -619,32 +619,29 @@ final class PhabricatorUser
       $this->loadPrimaryEmail(),
       PhabricatorAuthSessionEngine::ONETIME_WELCOME);
 
-    $body = pht(
-      "Welcome to Phabricator!\n\n".
-      "%s (%s) has created an account for you.\n\n".
-      "  Username: %s\n\n".
-      "To login to Phabricator, follow this link and set a password:\n\n".
-      "  %s\n\n".
-      "After you have set a password, you can login in the future by ".
-      "going here:\n\n".
-      "  %s\n",
-      $admin_username,
-      $admin_realname,
-      $user_username,
-      $uri,
-      $base_uri);
+    $body = new PhabricatorMetaMTAMailBody();
 
-    if (!$is_serious) {
-      $body .= sprintf(
-        "\n%s\n",
-        pht("Love,\nPhabricator"));
-    }
+    $body->addRawSection(
+      pht(
+        "Welcome to Phabricator!\n\n".
+        "%s (%s) has created an account for you.\n\n".
+        "  Username: %s\n\n".
+        "To login to Phabricator, follow this link and set a password:\n\n".
+        "  %s\n\n".
+        "After you have set a password, you can login in the future by ".
+        "going here:\n\n".
+        "  %s\n",
+        $admin_username,
+        $admin_realname,
+        $user_username,
+        $uri,
+        $base_uri));
 
     $mail = id(new PhabricatorMetaMTAMail())
       ->addTos(array($this->getPHID()))
       ->setForceDelivery(true)
       ->setSubject(pht('[Phabricator for Zomato] Welcome to Phabricator'))
-      ->setBody($body)
+      ->setBody($body->render())
       ->saveAndSend();
   }
 
@@ -675,25 +672,28 @@ final class PhabricatorUser
           "from now on. If you use OAuth to login, nothing should change."));
     }
 
-    $body = sprintf(
-      "%s\n\n  %s\n  %s\n\n%s",
-      pht(
-        '%s (%s) has changed your Phabricator username.',
-        $admin_username,
-        $admin_realname),
-      pht(
-        'Old Username: %s',
-        $old_username),
-      pht(
-        'New Username: %s',
-        $new_username),
-      $password_instructions);
+    $body = new PhabricatorMetaMTAMailBody();
+
+    $body->addRawSection(
+      sprintf(
+        "%s\n\n  %s\n  %s\n\n%s",
+        pht(
+          '%s (%s) has changed your Phabricator username.',
+          $admin_username,
+          $admin_realname),
+        pht(
+          'Old Username: %s',
+          $old_username),
+        pht(
+          'New Username: %s',
+          $new_username),
+        $password_instructions));
 
     $mail = id(new PhabricatorMetaMTAMail())
       ->addTos(array($this->getPHID()))
       ->setForceDelivery(true)
       ->setSubject(pht('[Phabricator for Zomato] Username Changed'))
-      ->setBody($body)
+      ->setBody($body->render())
       ->saveAndSend();
   }
 

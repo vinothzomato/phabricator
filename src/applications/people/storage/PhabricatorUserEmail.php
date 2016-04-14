@@ -179,7 +179,9 @@ final class PhabricatorUserEmail extends PhabricatorUserDAO {
       $signature = pht("Get Well Soon,\nInfra Team,\n Zomato");
     }
 
-    $body = sprintf(
+    $body = new PhabricatorMetaMTAMailBody();
+
+    $body->addRawSection(sprintf(
       "%s\n\n%s\n\n  %s\n\n%s",
       pht('Hi %s', $username),
       pht(
@@ -187,13 +189,13 @@ final class PhabricatorUserEmail extends PhabricatorUserDAO {
         'clicking this link:',
         $address),
       $link,
-      $signature);
+      $signature));
 
     id(new PhabricatorMetaMTAMail())
       ->addRawTos(array($address))
       ->setForceDelivery(true)
       ->setSubject(pht('[Phabricator for Zomato] Email Verification'))
-      ->setBody($body)
+      ->setBody($body->render())
       ->setRelatedPHID($user->getPHID())
       ->saveAndSend();
 
@@ -218,21 +220,25 @@ final class PhabricatorUserEmail extends PhabricatorUserDAO {
     $old_address = $this->getAddress();
     $new_address = $new->getAddress();
 
-    $body = sprintf(
-      "%s\n\n%s\n",
-      pht('Hi %s', $username),
-      pht(
-        'This email address (%s) is no longer your primary email address. '.
-        'Going forward, Phabricator will send all email to your new primary '.
-        'email address (%s).',
-        $old_address,
-        $new_address));
+    $body = new PhabricatorMetaMTAMailBody();
+
+    $body->addRawSection(
+      sprintf(
+        "%s\n\n%s\n",
+        pht('Hi %s', $username),
+        pht(
+          'This email address (%s) is no longer your primary email address. '.
+          'Going forward, Phabricator will send all email to your new primary '.
+          'email address (%s).',
+          $old_address,
+          $new_address)));
+
 
     id(new PhabricatorMetaMTAMail())
       ->addRawTos(array($old_address))
       ->setForceDelivery(true)
       ->setSubject(pht('[Phabricator for Zomato] Primary Address Changed'))
-      ->setBody($body)
+      ->setBody($body->render())
       ->setFrom($user->getPHID())
       ->setRelatedPHID($user->getPHID())
       ->saveAndSend();
@@ -252,19 +258,20 @@ final class PhabricatorUserEmail extends PhabricatorUserDAO {
 
     $new_address = $this->getAddress();
 
-    $body = sprintf(
+    $body = new PhabricatorMetaMTAMailBody();
+    $body->addRawSection(sprintf(
       "%s\n\n%s\n",
       pht('Hi %s', $username),
       pht(
         'This is now your primary email address (%s). Going forward, '.
         'Phabricator will send all email here.',
-        $new_address));
+        $new_address)));
 
     id(new PhabricatorMetaMTAMail())
       ->addRawTos(array($new_address))
       ->setForceDelivery(true)
       ->setSubject(pht('[Phabricator for Zomato] Primary Address Changed'))
-      ->setBody($body)
+      ->setBody($body->render())
       ->setFrom($user->getPHID())
       ->setRelatedPHID($user->getPHID())
       ->saveAndSend();

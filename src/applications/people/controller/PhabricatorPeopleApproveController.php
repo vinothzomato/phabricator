@@ -33,21 +33,24 @@ final class PhabricatorPeopleApproveController
         'Phabricator Account "%s" Approved',
         $user->getUsername());
 
-      $body = sprintf(
-        "%s\n\n  %s\n\n",
-        pht(
-          'Your Phabricator account (%s) has been approved by %s. You can '.
-          'login here:',
-          $user->getUsername(),
-          $admin->getUsername()),
-        PhabricatorEnv::getProductionURI('/'));
+      $body = new PhabricatorMetaMTAMailBody();
+
+      $body->addRawSection(
+        sprintf(
+          "%s\n\n  %s\n\n",
+          pht(
+            'Your Phabricator account (%s) has been approved by %s. You can '.
+            'login here:',
+            $user->getUsername(),
+            $admin->getUsername()),
+          PhabricatorEnv::getProductionURI('/')));
 
       $mail = id(new PhabricatorMetaMTAMail())
         ->addTos(array($user->getPHID()))
         ->addCCs(array($admin->getPHID()))
         ->setSubject('[Phabricator for Zomato] '.$title)
         ->setForceDelivery(true)
-        ->setBody($body)
+        ->setBody($body->render())
         ->saveAndSend();
 
       return id(new AphrontRedirectResponse())->setURI($done_uri);
