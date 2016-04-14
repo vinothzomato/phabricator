@@ -142,13 +142,13 @@ final class PhabricatorPeopleProfileManageController
     //  $reviewer_name = pht('Add to Review');
     //}
 
-    $curtain->addAction(
-      id(new PhabricatorActionView())
-        ->setIcon($reviewer_icon)
-        ->setName($reviewer_name)
-        ->setDisabled($can_edit)
-        ->setWorkflow(true)
-        ->setHref($this->getApplicationURI('reviewer/'.$user->getID().'/')));
+    // $curtain->addAction(
+    //   id(new PhabricatorActionView())
+    //     ->setIcon($reviewer_icon)
+    //     ->setName($reviewer_name)
+    //     ->setDisabled($can_edit)
+    //     ->setWorkflow(true)
+    //     ->setHref($this->getApplicationURI('reviewer/'.$user->getID().'/')));
 
     $is_admin = $viewer->getIsAdmin();
     $is_self = ($user->getPHID() === $viewer->getPHID());
