@@ -195,7 +195,7 @@ final class PhabricatorUserEmail extends PhabricatorUserDAO {
       ->addTos(array($address))
       ->setForceDelivery(true)
       ->setSubject(pht('[Phabricator for Zomato] Email Verification'))
-      ->setBody($body->render())
+      ->setHTMLBody($body->renderHTML())
       ->setRelatedPHID($user->getPHID())
       ->saveAndSend();
 
@@ -238,7 +238,7 @@ final class PhabricatorUserEmail extends PhabricatorUserDAO {
       ->addTos(array($old_address))
       ->setForceDelivery(true)
       ->setSubject(pht('[Phabricator for Zomato] Primary Address Changed'))
-      ->setBody($body->render())
+      ->setHTMLBody($body->renderHTML())
       ->setFrom($user->getPHID())
       ->setRelatedPHID($user->getPHID())
       ->saveAndSend();
@@ -271,7 +271,7 @@ final class PhabricatorUserEmail extends PhabricatorUserDAO {
       ->addTos(array($new_address))
       ->setForceDelivery(true)
       ->setSubject(pht('[Phabricator for Zomato] Primary Address Changed'))
-      ->setBody($body->render())
+      ->setHTMLBody($body->renderHTML())
       ->setFrom($user->getPHID())
       ->setRelatedPHID($user->getPHID())
       ->saveAndSend();
