@@ -171,6 +171,7 @@ final class PhabricatorProjectReviewersViewController
       PhabricatorPolicyCapability::CAN_EDIT);
 
     $supports_edit = $project->supportsEditMembers();
+    $is_admin = $viewer->getIsAdmin();
 
     $can_join = $supports_edit && PhabricatorPolicyFilter::hasCapability(
       $viewer,
@@ -248,7 +249,7 @@ final class PhabricatorProjectReviewersViewController
         ->setIcon('fa-user-plus')
         ->setHref("/project/reviewers/{$id}/add/")
         ->setWorkflow(true)
-        ->setDisabled(!$can_add));
+        ->setDisabled(!$is_admin));
 
     $can_lock = $can_edit && $supports_edit && $this->hasApplicationCapability(
       ProjectCanLockProjectsCapability::CAPABILITY);

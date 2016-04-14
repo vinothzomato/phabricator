@@ -12,6 +12,7 @@ final class PhabricatorProjectMembersRemoveController
       ->setViewer($viewer)
       ->withIDs(array($id))
       ->needMembers(true)
+      ->needReviewers(true)
       ->needWatchers(true)
       ->requireCapabilities(
         array(
@@ -25,17 +26,28 @@ final class PhabricatorProjectMembersRemoveController
 
     if ($type == 'watchers') {
       $is_watcher = true;
+      $is_reviewer = false;
       $edge_type = PhabricatorObjectHasWatcherEdgeType::EDGECONST;
-    } else {
+    } else if ($type == 'reviewers') {
+      if (!$project->supportsEditMembers()) {
+        return new Aphront404Response();
+      }
+      $is_reviewer = true;
+      $is_watcher = false;
+      $edge_type = PhabricatorProjectProjectHasReviewerEdgeType::EDGECONST;
+    }
+    else {
       if (!$project->supportsEditMembers()) {
         return new Aphront404Response();
       }
 
       $is_watcher = false;
+      $is_reviewer = false;
       $edge_type = PhabricatorProjectProjectHasMemberEdgeType::EDGECONST;
     }
 
     $members_uri = $this->getApplicationURI('members/'.$project->getID().'/');
+    $reviewers_uri = $this->getApplicationURI('reviewers/'.$project->getID().'/');
     $remove_phid = $request->getStr('phid');
 
     if ($request->isFormPost()) {
@@ -56,6 +68,10 @@ final class PhabricatorProjectMembersRemoveController
         ->setContinueOnMissingFields(true)
         ->applyTransactions($project, $xactions);
 
+      if ($is_reviewer) {
+        return id(new AphrontRedirectResponse())
+        ->setURI($reviewers_uri);
+      }  
       return id(new AphrontRedirectResponse())
         ->setURI($members_uri);
     }
@@ -75,6 +91,13 @@ final class PhabricatorProjectMembersRemoveController
         $target_name,
         $project_name);
       $button = pht('Remove Watcher');
+    } else if ($is_reviewer) {
+      $title = pht('Remove Reviewer');
+      $body = pht(
+        'Remove %s as a reviewer of %s?',
+        $target_name,
+        $project_name);
+      $button = pht('Remove Reviewer');
     } else {
       $title = pht('Remove Member');
       $body = pht(

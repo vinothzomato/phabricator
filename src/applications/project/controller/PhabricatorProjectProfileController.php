@@ -62,6 +62,13 @@ final class PhabricatorProjectProfileController
       ->setBackground(PHUIObjectBoxView::GREY)
       ->setUserPHIDs($project->getMemberPHIDs());
 
+    $reviewer_list = id(new PhabricatorProjectReviewerListView())
+      ->setUser($viewer)
+      ->setProject($project)
+      ->setLimit(5)
+      ->setBackground(PHUIObjectBoxView::GREY)
+      ->setUserPHIDs($project->getReviewerPHIDs());  
+
     $watcher_list = id(new PhabricatorProjectWatcherListView())
       ->setUser($viewer)
       ->setProject($project)
@@ -102,6 +109,7 @@ final class PhabricatorProjectProfileController
           $milestone_list,
           $subproject_list,
           $member_list,
+          $reviewer_list,
           $watcher_list,
         ));
 

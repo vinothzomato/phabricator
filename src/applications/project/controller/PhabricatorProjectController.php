@@ -36,6 +36,7 @@ abstract class PhabricatorProjectController extends PhabricatorController {
     $query = id(new PhabricatorProjectQuery())
       ->setViewer($viewer)
       ->needMembers(true)
+      ->needReviewers(true)
       ->needWatchers(true)
       ->needImages(true)
       ->needSlugs(true);
