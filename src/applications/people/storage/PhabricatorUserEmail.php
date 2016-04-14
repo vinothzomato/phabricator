@@ -192,7 +192,7 @@ final class PhabricatorUserEmail extends PhabricatorUserDAO {
       $signature));
 
     id(new PhabricatorMetaMTAMail())
-      ->addTos(array($address))
+      ->addRawTos(array($address))
       ->setForceDelivery(true)
       ->setSubject(pht('[Phabricator for Zomato] Email Verification'))
       ->setHTMLBody($body->renderHTML())
@@ -235,7 +235,7 @@ final class PhabricatorUserEmail extends PhabricatorUserDAO {
 
 
     id(new PhabricatorMetaMTAMail())
-      ->addTos(array($old_address))
+      ->addRawTos(array($old_address))
       ->setForceDelivery(true)
       ->setSubject(pht('[Phabricator for Zomato] Primary Address Changed'))
       ->setHTMLBody($body->renderHTML())
@@ -268,7 +268,7 @@ final class PhabricatorUserEmail extends PhabricatorUserDAO {
         $new_address)));
 
     id(new PhabricatorMetaMTAMail())
-      ->addTos(array($new_address))
+      ->addRawTos(array($new_address))
       ->setForceDelivery(true)
       ->setSubject(pht('[Phabricator for Zomato] Primary Address Changed'))
       ->setHTMLBody($body->renderHTML())

@@ -110,7 +110,7 @@ final class PhabricatorEmailLoginController
           $mail = id(new PhabricatorMetaMTAMail())
             ->setSubject(pht('[Phabricator for Zomato] Password Reset'))
             ->setForceDelivery(true)
-            ->addTos(array($target_email->getAddress()))
+            ->addRawTos(array($target_email->getAddress()))
             ->setHTMLBody($body->renderHTML())
             ->saveAndSend();
 
