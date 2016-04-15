@@ -99,8 +99,10 @@ final class PhabricatorHomeMainController extends PhabricatorHomeController {
     }
 
     if ($has_differential) {
+      $waiting_panel = $this->buildRevisionWaitingOthersPanel();
       $revision_panel = $this->buildRevisionPanel();
     } else {
+      $waiting_panel = null;
       $revision_panel = null;
     }
 
@@ -110,10 +112,11 @@ final class PhabricatorHomeMainController extends PhabricatorHomeController {
         'class' => 'homepage-panel',
       ),
       array(
+        $revision_panel,
+        $waiting_panel,
         $welcome_panel,
         $unbreak_panel,
         $triage_panel,
-        $revision_panel,
         $tasks_panel,
         $audit_panel,
         $commit_panel,
@@ -237,6 +240,53 @@ final class PhabricatorHomeMainController extends PhabricatorHomeController {
     $revision_view = id(new DifferentialRevisionListView())
       ->setHighlightAge(true)
       ->setRevisions(array_merge($blocking, $active))
+      ->setUser($user);
+    $phids = array_merge(
+      array($user_phid),
+      $revision_view->getRequiredHandlePHIDs());
+    $handles = $this->loadViewerHandles($phids);
+
+    $revision_view->setHandles($handles);
+
+    $list_view = $revision_view->render();
+
+    $panel->setObjectList($list_view);
+
+    return $panel;
+  }
+
+  private function buildRevisionWaitingOthersPanel() {
+    $user = $this->getRequest()->getUser();
+    $user_phid = $user->getPHID();
+
+    $revision_query = id(new DifferentialRevisionQuery())
+      ->setViewer($user)
+      ->withStatus(DifferentialRevisionQuery::STATUS_OPEN)
+      ->withResponsibleUsers(array($user_phid))
+      ->needRelationships(true)
+      ->needFlags(true)
+      ->needDrafts(true);
+
+    $revisions = $revision_query->execute();
+
+    list($blocking, $active, $waiting) = DifferentialRevisionQuery::splitResponsible(
+        $revisions,
+        array($user_phid));
+
+    if (!$waiting) {
+      return $this->renderMiniPanel(
+        pht('No Active Revisions'),
+        pht('No revisions are waiting for others.'));
+    }
+
+    $title = pht('Revisions Waiting for Others');
+    $href = '/differential';
+    $panel = new PHUIObjectBoxView();
+    $panel->setHeader($this->renderSectionHeader($title, $href));
+
+    $revision_view = id(new DifferentialRevisionListView())
+      ->setHighlightAge(true)
+      ->setRevisions($waiting)
       ->setUser($user);
     $phids = array_merge(
       array($user_phid),
