@@ -647,13 +647,15 @@ final class DifferentialRevisionViewController extends DifferentialController {
     if ($viewer_is_owner) {
       switch ($status) {
         case ArcanistDifferentialRevisionStatus::NEEDS_REVIEW:
-          $actions[DifferentialAction::ACTION_ACCEPT] = $allow_self_accept;
+          //$actions[DifferentialAction::ACTION_ACCEPT] = $allow_self_accept;
+          $actions[DifferentialAction::ACTION_ACCEPT] = $viewer_is_reviewer;
           $actions[DifferentialAction::ACTION_ABANDON] = true;
           $actions[DifferentialAction::ACTION_RETHINK] = true;
           break;
         case ArcanistDifferentialRevisionStatus::NEEDS_REVISION:
         case ArcanistDifferentialRevisionStatus::CHANGES_PLANNED:
-          $actions[DifferentialAction::ACTION_ACCEPT] = $allow_self_accept;
+          //$actions[DifferentialAction::ACTION_ACCEPT] = $allow_self_accept;
+          $actions[DifferentialAction::ACTION_ACCEPT] = $viewer_is_reviewer;
           $actions[DifferentialAction::ACTION_ABANDON] = true;
           $actions[DifferentialAction::ACTION_REQUEST] = true;
           break;
