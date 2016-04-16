@@ -517,7 +517,7 @@ final class DifferentialTransactionEditor
 
               $base = $diff->getBase();
               if ($project->getIsPullRequest() && strpos($base, ':')) {
-                $base = explode(';', $base)[0];
+                $base = explode(':', $base)[0];
               }
 
               $repo_url = $diff->getRepo();
