@@ -489,7 +489,7 @@ final class DifferentialTransactionEditor
               PhabricatorProjectObjectHasProjectEdgeType::EDGECONST);
             $projects = array_reverse($projects);
             $project = end($projects);
-            var_dump($projects); var_dump($project) die();
+            var_dump($projects); var_dump($project); die();
 
             if ($repository && $project && $action_type == DifferentialAction::ACTION_ACCEPT) {
 
