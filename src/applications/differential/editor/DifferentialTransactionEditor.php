@@ -488,7 +488,7 @@ final class DifferentialTransactionEditor
               $object->getPHID(),
               PhabricatorProjectObjectHasProjectEdgeType::EDGECONST);
             $projects = array_reverse($projects);
-            $project = last($projects);
+            $project = end($projects);
 
             if ($repository && $project && $action_type == DifferentialAction::ACTION_ACCEPT) {
 
