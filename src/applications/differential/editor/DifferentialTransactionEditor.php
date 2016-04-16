@@ -490,7 +490,7 @@ final class DifferentialTransactionEditor
             $projects = array_reverse($projects);
             $projectPHID = end($projects);
             $project = id(new PhabricatorProjectQuery())
-            ->setViewer($this->getViewer())
+            ->setViewer($actor)
             ->withPHIDs(array($projectPHID))
             ->execute();
 
