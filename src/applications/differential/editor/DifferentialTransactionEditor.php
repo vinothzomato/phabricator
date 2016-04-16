@@ -488,8 +488,11 @@ final class DifferentialTransactionEditor
               $object->getPHID(),
               PhabricatorProjectObjectHasProjectEdgeType::EDGECONST);
             $projects = array_reverse($projects);
-            $project = end($projects);
-            var_dump($projects); var_dump($project); die();
+            $projectPHID = end($projects);
+            $project = id(new PhabricatorProjectQuery())
+            ->setViewer($this->getViewer())
+            ->withPHIDs(array($projectPHID))
+            ->execute();
 
             if ($repository && $project && $action_type == DifferentialAction::ACTION_ACCEPT) {
 
