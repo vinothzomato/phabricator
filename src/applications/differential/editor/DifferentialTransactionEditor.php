@@ -492,7 +492,7 @@ final class DifferentialTransactionEditor
             $project = id(new PhabricatorProjectQuery())
             ->setViewer($actor)
             ->withPHIDs(array($projectPHID))
-            ->execute();
+            ->executeOne();
 
             if ($repository && $project && $action_type == DifferentialAction::ACTION_ACCEPT) {
 
