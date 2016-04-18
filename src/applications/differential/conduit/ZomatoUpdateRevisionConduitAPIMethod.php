@@ -115,9 +115,16 @@ extends DifferentialConduitAPIMethod {
     $bundle->setLoadFileDataCallback(array($loader, 'loadFileData'));
     $old_diff = $bundle->toGitPatch();
 
-    $changes = array();
-    foreach ($change_data as $dict) {
-      $changes[] = ArcanistDiffChange::newFromDictionary($dict);
+    if () {
+      $changes = array();
+      foreach ($change_data as $dict) {
+        $changes[] = ArcanistDiffChange::newFromDictionary($dict);
+      }
+      $changes = array_reverse($changes);
+    }
+    else{
+      $parser = new ArcanistDiffParser();
+      $diff_changes = $parser->parseDiff($raw_diff);
     }
 
     $loader = id(new PhabricatorFileBundleLoader())
@@ -132,7 +139,7 @@ extends DifferentialConduitAPIMethod {
     }
 
     if ($change_data) {
-      return array('old' => $old_diff, 'new'=>$new_diff);
+      return array('old' => $old_diff, 'new' => $new_diff);
     }
 
     if ($change_data) {
