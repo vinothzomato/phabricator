@@ -200,7 +200,7 @@ final class ZomatoCreateRevisionTestConduitAPIMethod
       $call->setUser($viewer);
       $result = $call->execute();
 
-      throw new ConduitException("diff_spec is".var_dump($diff_spec)."result is ".var_dump($result));
+      throw new ConduitException("result is ".var_dump($result));
       
 
       $diff_id = $result['id'];
