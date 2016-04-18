@@ -240,7 +240,7 @@ final class ZomatoCreateRevisionConduitAPIMethod
      array(
       'fields' => $fields,
       'projectId' => $projectId,
-      'diffid' => $diff_id,
+      'diffid' => $newDiff->getID(),
       ));
     $call->setUser($viewer);
     $result = $call->execute();
