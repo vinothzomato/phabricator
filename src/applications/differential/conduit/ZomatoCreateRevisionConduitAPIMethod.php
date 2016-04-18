@@ -123,8 +123,9 @@ final class ZomatoCreateRevisionConduitAPIMethod
     if ($prev_diff) {
       list($changesets, $vs_map, $vs_changesets, $rendering_references) =
       $this->loadChangesetsAndVsMap(
+        $request,
         $prev_diff,
-        $prev_diff,
+        null,
         $repository);
 
       id(new DifferentialHunkQuery())
@@ -271,6 +272,7 @@ final class ZomatoCreateRevisionConduitAPIMethod
   }
 
   private function loadChangesetsAndVsMap(
+    ConduitAPIRequest $request,
     DifferentialDiff $target,
     DifferentialDiff $diff_vs = null,
     PhabricatorRepository $repository = null) {
@@ -281,7 +283,7 @@ final class ZomatoCreateRevisionConduitAPIMethod
     }
 
     $raw_changesets = id(new DifferentialChangesetQuery())
-      ->setViewer($this->getRequest()->getUser())
+      ->setViewer($request->getUser())
       ->withDiffs($load_diffs)
       ->execute();
     $changeset_groups = mgroup($raw_changesets, 'getDiffID');
