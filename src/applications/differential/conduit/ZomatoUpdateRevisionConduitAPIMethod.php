@@ -115,13 +115,15 @@ extends DifferentialConduitAPIMethod {
     $bundle->setLoadFileDataCallback(array($loader, 'loadFileData'));
     $old_diff = $bundle->toGitPatch();
 
-    $parser = new ArcanistDiffParser();
-    $diff_changes = $parser->parseDiff($raw_diff);
+    $changes = array();
+    foreach ($change_data as $dict) {
+      $changes[] = ArcanistDiffChange::newFromDictionary($dict);
+    }
 
     $loader = id(new PhabricatorFileBundleLoader())
     ->setViewer($viewer);
 
-    $bundle = ArcanistBundle::newFromChanges($diff_changes);
+    $bundle = ArcanistBundle::newFromChanges($changes);
     $bundle->setLoadFileDataCallback(array($loader, 'loadFileData'));
     $new_diff = $bundle->toGitPatch();
 
