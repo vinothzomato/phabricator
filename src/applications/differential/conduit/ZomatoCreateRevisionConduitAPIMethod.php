@@ -238,7 +238,8 @@ final class ZomatoCreateRevisionConduitAPIMethod
     }
 
     if ($change_data) {
-      throw new ConduitException(var_dump($newDiff));
+      $diffid = $newDiff->getID();
+      throw new ConduitException(var_dump($diffid));
     }
 
     $fields['reviewerPHIDs'] = $reviewers;
