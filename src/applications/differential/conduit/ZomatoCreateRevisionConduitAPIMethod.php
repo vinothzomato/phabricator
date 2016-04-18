@@ -12,6 +12,10 @@ final class ZomatoCreateRevisionConduitAPIMethod
   }
 
   protected function defineParamTypes() {
+    $vcs_const = $this->formatStringConstants(
+      array(
+        'git'
+        ));
     $status_const = $this->formatStringConstants(
       array(
         'none',
@@ -21,12 +25,22 @@ final class ZomatoCreateRevisionConduitAPIMethod
         'fail',
         ));
     return array(
+      'changes' => 'optional list<dict>',
+      'diff' => 'optional string',
       'fields' => 'required dict',
       'repo' => 'required string',
       'base' => 'required string',
       'head' => 'required string',
       'repoId' => 'required string',
       'projectId' => 'required string',
+      'sourceMachine'             => 'optional string',
+      'sourcePath'                => 'optional string',
+      'branch'                    => 'optional string',
+      'bookmark'                  => 'optional string',
+      'sourceControlSystem'       => 'optional '.$vcs_const,
+      'sourceControlPath'         => 'optional string',
+      'sourceControlBaseRevision' => 'optional string',
+      'creationMethod'            => 'optional string',
       'lintStatus' => 'required '.$status_const,
     );
   }
@@ -48,6 +62,8 @@ final class ZomatoCreateRevisionConduitAPIMethod
 
     $viewer = $request->getUser();
     $fields = $request->getValue('fields', array());
+    $change_data = $request->getValue('changes');
+    $diff_data = $request->getValue('diff');
 
     $repo = $request->getValue('repo');
     $base = $request->getValue('base');
@@ -144,46 +160,76 @@ final class ZomatoCreateRevisionConduitAPIMethod
     }
 
     if (!$newDiff) {
-      $call = new ConduitCall(
-        'differential.createrawdiff',
+      if ($change_data) {
+       $diff_spec = array(
+        'changes' => $change_data,
+        'lintStatus' => $request->getValue('lintStatus'),
+        'unitStatus' => 'skip',
+        'sourceMachine' => $request->getValue('sourceMachine'),
+        'sourcePath' => $request->getValue('sourcePath'),
+        'branch' => $request->getValue('branch'),
+        'bookmark' => $request->getValue('bookmark'),
+        'sourceControlSystem' => $request->getValue('sourceControlSystem'),
+        'sourceControlPath'  => $request->getValue('sourceControlPath'),
+        'sourceControlBaseRevision' => $request->getValue('sourceControlBaseRevision'),
+        'creationMethod' => $request->getValue('creationMethod'),
+        );
+       $call = new ConduitCall(
+        'differential.creatediff',
         array(
-          'diff' => $diff,
           'repositoryPHID' => $repository->getPHID(),
           'repo' => $repo,
           'base' => $base,
           'head' => $head,
           'viewPolicy' => 'users',
-          ));
-      $call->setUser($viewer);
-      $result = $call->execute();
+          ) + $diff_spec);
+       $call->setUser($viewer);
+       $result = $call->execute();
 
-      $diff_id = $result['id'];
-
-      $newDiff = id(new DifferentialDiffQuery())
-      ->setViewer($viewer)
-      ->withIDs(array($diff_id))
-      ->executeOne();
-
-      switch ($request->getValue('lintStatus')) {
-        case 'skip':
-        $lint_status = DifferentialLintStatus::LINT_SKIP;
-        break;
-        case 'okay':
-        $lint_status = DifferentialLintStatus::LINT_OKAY;
-        break;
-        case 'warn':
-        $lint_status = DifferentialLintStatus::LINT_WARN;
-        break;
-        case 'fail':
-        $lint_status = DifferentialLintStatus::LINT_FAIL;
-        break;
-        case 'none':
-        default:
-        $lint_status = DifferentialLintStatus::LINT_NONE;
-        break;
+       $diff_id = $result['id'];
       }
-      $newDiff->setLintStatus($lint_status);
-      $newDiff->save();
+      else{
+        $call = new ConduitCall(
+          'differential.createrawdiff',
+          array(
+            'diff' => $diff,
+            'repositoryPHID' => $repository->getPHID(),
+            'repo' => $repo,
+            'base' => $base,
+            'head' => $head,
+            'viewPolicy' => 'users',
+            ));
+        $call->setUser($viewer);
+        $result = $call->execute();
+
+        $diff_id = $result['id'];
+
+        $newDiff = id(new DifferentialDiffQuery())
+        ->setViewer($viewer)
+        ->withIDs(array($diff_id))
+        ->executeOne();
+
+        switch ($request->getValue('lintStatus')) {
+          case 'skip':
+          $lint_status = DifferentialLintStatus::LINT_SKIP;
+          break;
+          case 'okay':
+          $lint_status = DifferentialLintStatus::LINT_OKAY;
+          break;
+          case 'warn':
+          $lint_status = DifferentialLintStatus::LINT_WARN;
+          break;
+          case 'fail':
+          $lint_status = DifferentialLintStatus::LINT_FAIL;
+          break;
+          case 'none':
+          default:
+          $lint_status = DifferentialLintStatus::LINT_NONE;
+          break;
+        }
+        $newDiff->setLintStatus($lint_status);
+        $newDiff->save();
+      }
     }
 
     $fields['reviewerPHIDs'] = $reviewers;
@@ -194,7 +240,7 @@ final class ZomatoCreateRevisionConduitAPIMethod
      array(
       'fields' => $fields,
       'projectId' => $projectId,
-      'diffid' => $newDiff->getID(),
+      'diffid' => $diff_id,
       ));
     $call->setUser($viewer);
     $result = $call->execute();
