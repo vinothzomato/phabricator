@@ -16,6 +16,7 @@ final class ZomatoGetDiffConduitAPIMethod
       'repo' => 'required string',
       'base' => 'required string',
       'head' => 'required string',
+      'projectId' => 'required string',
       );
   }
 
@@ -26,6 +27,7 @@ final class ZomatoGetDiffConduitAPIMethod
   protected function defineErrorTypes() {
     return array(
       'ERR_NO_CHANGES' => pht('No changes found between base and head.'),
+      'ERR_PROJECT_NOT_FOUND' => pht('Project was not found.'),
     );
   }
 
@@ -36,6 +38,19 @@ final class ZomatoGetDiffConduitAPIMethod
     $repo = $request->getValue('repo');
     $base = $request->getValue('base');
     $head = $request->getValue('head');
+
+    $projectId = $request->getValue('projectId');
+    $project = id(new PhabricatorProjectQuery())
+    ->setViewer($viewer)
+    ->withIDs(array($projectId))
+    ->needReviewers(true)
+    ->executeOne();
+    if (!$project) {
+      throw new ConduitException('ERR_PROJECT_NOT_FOUND');
+    }      
+    if ($project->getIsPullRequest()) {
+      $head = $viewer->getGithubUsername().':'.$head;
+    }
 
     $authorGithubUser = new GithubApiUser();
     $authorGithubUser->setUsername($viewer->getGithubUsername());
