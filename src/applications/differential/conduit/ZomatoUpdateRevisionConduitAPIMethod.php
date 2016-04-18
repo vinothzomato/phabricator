@@ -130,6 +130,10 @@ extends DifferentialConduitAPIMethod {
     }
 
     if ($change_data) {
+      return array('old' => $old_diff, 'new'=>$new_diff);
+    }
+
+    if ($change_data) {
       $diff_spec = array(
         'changes' => $change_data,
         'lintStatus' => 'skip',
