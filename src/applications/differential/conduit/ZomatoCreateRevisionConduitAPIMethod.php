@@ -121,7 +121,7 @@ final class ZomatoCreateRevisionConduitAPIMethod
     $newDiff = null;
 
     if ($prev_diff) {
-      $diff = id(new DifferentialDiffQuery())
+      $prev_diff = id(new DifferentialDiffQuery())
       ->withIDs(array($prev_diff->getID()))
       ->setViewer($viewer)
       ->needChangesets(true)
