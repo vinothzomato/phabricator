@@ -121,23 +121,14 @@ final class ZomatoCreateRevisionConduitAPIMethod
     $newDiff = null;
 
     if ($prev_diff) {
-      list($changesets, $vs_map, $vs_changesets, $rendering_references) =
-      $this->loadChangesetsAndVsMap(
-        $request,
-        $prev_diff,
-        null,
-        $repository);
-
-      id(new DifferentialHunkQuery())
-      ->setViewer($viewer)
-      ->withChangesets($changesets)
-      ->needAttachToChangesets(true)
+      id(new DifferentialChangesetQuery())
+      ->setViewer($this->getViewer())
+      ->withDiffs(array($prev_diff))
+      ->needAttachToDiffs(true)
+      ->needHunks(true)
       ->execute();
 
-      $diff = new DifferentialDiff();
-      $diff->attachChangesets($changesets);
       $raw_changes = $prev_diff->buildChangesList();
-
       $changes = array();
       foreach ($raw_changes as $changedict) {
         $changes[] = ArcanistDiffChange::newFromDictionary($changedict);
@@ -271,62 +262,4 @@ final class ZomatoCreateRevisionConduitAPIMethod
     return $result;
   }
 
-  private function loadChangesetsAndVsMap(
-    ConduitAPIRequest $request,
-    DifferentialDiff $target,
-    DifferentialDiff $diff_vs = null,
-    PhabricatorRepository $repository = null) {
-
-    $load_diffs = array($target);
-    if ($diff_vs) {
-      $load_diffs[] = $diff_vs;
-    }
-
-    $raw_changesets = id(new DifferentialChangesetQuery())
-      ->setViewer($request->getUser())
-      ->withDiffs($load_diffs)
-      ->execute();
-    $changeset_groups = mgroup($raw_changesets, 'getDiffID');
-
-    $changesets = idx($changeset_groups, $target->getID(), array());
-    $changesets = mpull($changesets, null, 'getID');
-
-    $refs          = array();
-    $vs_map        = array();
-    $vs_changesets = array();
-    if ($diff_vs) {
-      $vs_id                  = $diff_vs->getID();
-      $vs_changesets_path_map = array();
-      foreach (idx($changeset_groups, $vs_id, array()) as $changeset) {
-        $path = $changeset->getAbsoluteRepositoryPath($repository, $diff_vs);
-        $vs_changesets_path_map[$path] = $changeset;
-        $vs_changesets[$changeset->getID()] = $changeset;
-      }
-      foreach ($changesets as $key => $changeset) {
-        $path = $changeset->getAbsoluteRepositoryPath($repository, $target);
-        if (isset($vs_changesets_path_map[$path])) {
-          $vs_map[$changeset->getID()] =
-            $vs_changesets_path_map[$path]->getID();
-          $refs[$changeset->getID()] =
-            $changeset->getID().'/'.$vs_changesets_path_map[$path]->getID();
-          unset($vs_changesets_path_map[$path]);
-        } else {
-          $refs[$changeset->getID()] = $changeset->getID();
-        }
-      }
-      foreach ($vs_changesets_path_map as $path => $changeset) {
-        $changesets[$changeset->getID()] = $changeset;
-        $vs_map[$changeset->getID()]     = -1;
-        $refs[$changeset->getID()]       = $changeset->getID().'/-1';
-      }
-    } else {
-      foreach ($changesets as $changeset) {
-        $refs[$changeset->getID()] = $changeset->getID();
-      }
-    }
-
-    $changesets = msort($changesets, 'getSortKey');
-
-    return array($changesets, $vs_map, $vs_changesets, $refs);
-  }
 }
