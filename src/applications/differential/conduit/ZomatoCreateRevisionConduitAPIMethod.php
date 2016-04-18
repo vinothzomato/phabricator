@@ -187,6 +187,11 @@ final class ZomatoCreateRevisionConduitAPIMethod
        $result = $call->execute();
 
        $diff_id = $result['id'];
+
+       $newDiff = id(new DifferentialDiffQuery())
+       ->setViewer($viewer)
+       ->withIDs(array($diff_id))
+       ->executeOne();
       }
       else{
         $call = new ConduitCall(
