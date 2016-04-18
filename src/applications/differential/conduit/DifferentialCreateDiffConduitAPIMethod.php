@@ -41,6 +41,10 @@ final class DifferentialCreateDiffConduitAPIMethod
       'lintStatus'                => 'required '.$status_const,
       'unitStatus'                => 'required '.$status_const,
       'repositoryPHID'            => 'optional phid',
+      'viewPolicy'                => 'optional string',
+      'repo'                      => 'optional string',
+      'base'                      => 'optional string',
+      'head'                      => 'optional string',
 
       'parentRevisionID'          => 'deprecated',
       'authorPHID'                => 'deprecated',
@@ -56,12 +60,19 @@ final class DifferentialCreateDiffConduitAPIMethod
     $viewer = $request->getUser();
     $change_data = $request->getValue('changes');
 
+    $repo = $request->getValue('repo');
+    $base = $request->getValue('base');
+    $head = $request->getValue('head');
+
     $changes = array();
     foreach ($change_data as $dict) {
       $changes[] = ArcanistDiffChange::newFromDictionary($dict);
     }
 
     $diff = DifferentialDiff::newFromRawChanges($viewer, $changes);
+    $diff->setRepo($repo);
+    $diff->setBase($base);
+    $diff->setHead($head);
 
     // TODO: Remove repository UUID eventually; for now continue writing
     // the UUID. Note that we'll overwrite it below if we identify a
@@ -141,6 +152,12 @@ final class DifferentialCreateDiffConduitAPIMethod
         ->setTransactionType(DifferentialDiffTransaction::TYPE_DIFF_CREATE)
         ->setNewValue($diff_data_dict),
     );
+
+    if ($request->getValue('viewPolicy')) {
+      $xactions[] = id(new DifferentialDiffTransaction())
+        ->setTransactionType(PhabricatorTransactions::TYPE_VIEW_POLICY)
+        ->setNewValue($request->getValue('viewPolicy'));
+    }
 
     id(new DifferentialDiffEditor())
       ->setActor($viewer)
