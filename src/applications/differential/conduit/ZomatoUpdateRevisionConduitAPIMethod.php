@@ -115,7 +115,7 @@ extends DifferentialConduitAPIMethod {
     $bundle->setLoadFileDataCallback(array($loader, 'loadFileData'));
     $old_diff = $bundle->toGitPatch();
 
-    if () {
+    if ($change_data) {
       $changes = array();
       foreach ($change_data as $dict) {
         $changes[] = ArcanistDiffChange::newFromDictionary($dict);
