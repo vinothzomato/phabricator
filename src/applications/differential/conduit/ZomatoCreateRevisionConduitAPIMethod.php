@@ -237,6 +237,11 @@ final class ZomatoCreateRevisionConduitAPIMethod
       }
     }
 
+    if ($change_data) {
+      var_dump($newDiff); 
+      die();
+    }
+
     $fields['reviewerPHIDs'] = $reviewers;
     $fields['ccPHIDs'] = $reviewers;
 
