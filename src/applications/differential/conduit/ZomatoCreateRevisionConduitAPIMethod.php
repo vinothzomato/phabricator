@@ -187,11 +187,7 @@ final class ZomatoCreateRevisionConduitAPIMethod
        $result = $call->execute();
 
        $diff_id = $result['id'];
-
-       $newDiff = id(new DifferentialDiffQuery())
-       ->setViewer($viewer)
-       ->withIDs(array($diff_id))
-       ->executeOne();
+       $diffid = $diff_id;
       }
       else{
         $call = new ConduitCall(
@@ -208,6 +204,7 @@ final class ZomatoCreateRevisionConduitAPIMethod
         $result = $call->execute();
 
         $diff_id = $result['id'];
+        $diffid = $diff_id;
 
         $newDiff = id(new DifferentialDiffQuery())
         ->setViewer($viewer)
@@ -236,8 +233,9 @@ final class ZomatoCreateRevisionConduitAPIMethod
         $newDiff->save();
       }
     }
-
-    $diffid = $newDiff->getID();
+    else{
+      $diffid = $newDiff->getID();
+    }
 
     $fields['reviewerPHIDs'] = $reviewers;
     $fields['ccPHIDs'] = $reviewers;
