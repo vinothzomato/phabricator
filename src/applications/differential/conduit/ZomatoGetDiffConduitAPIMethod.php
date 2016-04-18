@@ -44,12 +44,15 @@ final class ZomatoGetDiffConduitAPIMethod
     ->setViewer($viewer)
     ->withIDs(array($projectId))
     ->executeOne();
+
     if (!$project) {
       throw new ConduitException('ERR_PROJECT_NOT_FOUND');
     }      
     if ($project->getIsPullRequest()) {
       $head = $viewer->getGithubUsername().':'.$head;
     }
+
+    return array('base' => $base, '$head' => $head, '$repo' => $repo);
 
     $authorGithubUser = new GithubApiUser();
     $authorGithubUser->setUsername($viewer->getGithubUsername());
