@@ -12,6 +12,10 @@ extends DifferentialConduitAPIMethod {
   }
 
   protected function defineParamTypes() {
+    $vcs_const = $this->formatStringConstants(
+      array(
+        'git'
+        ));
     return array(
       'changes' => 'optional list<dict>',
       'diff' => 'optional string',
