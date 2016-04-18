@@ -19,6 +19,14 @@ extends DifferentialConduitAPIMethod {
       'base' => 'required string',
       'head' => 'required string',
       'message' => 'required string',
+      'sourceMachine'             => 'optional string',
+      'sourcePath'                => 'optional string',
+      'branch'                    => 'optional string',
+      'bookmark'                  => 'optional string',
+      'sourceControlSystem'       => 'optional '.$vcs_const,
+      'sourceControlPath'         => 'optional string',
+      'sourceControlBaseRevision' => 'optional string',
+      'creationMethod'            => 'optional string',
       );
   }
 
