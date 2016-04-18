@@ -52,8 +52,6 @@ final class ZomatoGetDiffConduitAPIMethod
       $head = $viewer->getGithubUsername().':'.$head;
     }
 
-    return array('base' => $base, '$head' => $head, '$repo' => $repo);
-
     $authorGithubUser = new GithubApiUser();
     $authorGithubUser->setUsername($viewer->getGithubUsername());
     $authorGithubUser->setToken($viewer->getGithubAccessToken());
