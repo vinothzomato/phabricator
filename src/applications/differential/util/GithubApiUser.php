@@ -112,7 +112,7 @@ extends Phobject {
 				'Authorization: token '.$this->token,
 				'User-Agent: Zomato-Phabricator',
 				'Content-Type: application/json',
-				'Accept: application/vnd.github.VERSION.diff'
+				'Accept: application/vnd.github.v3.diff'
 				),
 			));
 
