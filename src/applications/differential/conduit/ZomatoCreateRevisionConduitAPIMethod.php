@@ -140,13 +140,22 @@ final class ZomatoCreateRevisionConduitAPIMethod
       $bundle->setLoadFileDataCallback(array($loader, 'loadFileData'));
       $raw_diff = $bundle->toGitPatch();
 
-      $parser = new ArcanistDiffParser();
-      $diff_changes = $parser->parseDiff($diff);
-
+      if ($change_data) {
+        $changes = array();
+        foreach ($change_data as $dict) {
+          $changes[] = ArcanistDiffChange::newFromDictionary($dict);
+        }
+        $changes = array_reverse($changes);
+      }
+      else{
+        $parser = new ArcanistDiffParser();
+        $changes = $parser->parseDiff($raw_diff);
+      }
+      
       $loader = id(new PhabricatorFileBundleLoader())
       ->setViewer($viewer);
 
-      $bundle = ArcanistBundle::newFromChanges($diff_changes);
+      $bundle = ArcanistBundle::newFromChanges($changes);
       $bundle->setLoadFileDataCallback(array($loader, 'loadFileData'));
       $new_diff = $bundle->toGitPatch();
 

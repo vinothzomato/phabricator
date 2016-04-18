@@ -124,7 +124,7 @@ extends DifferentialConduitAPIMethod {
     }
     else{
       $parser = new ArcanistDiffParser();
-      $diff_changes = $parser->parseDiff($raw_diff);
+      $changes = $parser->parseDiff($raw_diff);
     }
 
     $loader = id(new PhabricatorFileBundleLoader())
