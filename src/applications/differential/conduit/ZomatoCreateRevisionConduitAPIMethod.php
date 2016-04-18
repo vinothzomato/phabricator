@@ -151,6 +151,10 @@ final class ZomatoCreateRevisionConduitAPIMethod
       $bundle->setLoadFileDataCallback(array($loader, 'loadFileData'));
       $new_diff = $bundle->toGitPatch();
 
+      if ($diff_data) {
+        return array('old' => $raw_diff, 'new'=>$new_diff);
+      }
+
       if ($raw_diff === $new_diff) {
         if ($prev_diff->getRevisionID()) {
           $diff_revision = id(new DifferentialRevision())->load($prev_diff->getRevisionID());
