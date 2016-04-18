@@ -237,10 +237,7 @@ final class ZomatoCreateRevisionConduitAPIMethod
       }
     }
 
-    if ($change_data) {
-      $diffid = $newDiff->getID();
-      throw new ConduitException(var_dump($diffid));
-    }
+    $diffid = $newDiff->getID();
 
     $fields['reviewerPHIDs'] = $reviewers;
     $fields['ccPHIDs'] = $reviewers;
@@ -250,7 +247,7 @@ final class ZomatoCreateRevisionConduitAPIMethod
      array(
       'fields' => $fields,
       'projectId' => $projectId,
-      'diffid' => $newDiff->getID(),
+      'diffid' => $diffid,
       ));
     $call->setUser($viewer);
     $result = $call->execute();
