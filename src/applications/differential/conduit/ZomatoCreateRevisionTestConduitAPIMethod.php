@@ -156,6 +156,7 @@ final class ZomatoCreateRevisionTestConduitAPIMethod
     }
 
     if (!$newDiff) {
+      $parser = new ArcanistDiffParser();
       $changes = $parser->parseDiff($diff);
       foreach ($changes as $key => $change) {
         // Remove "message" changes, e.g. from "git show".
