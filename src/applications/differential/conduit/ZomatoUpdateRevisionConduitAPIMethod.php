@@ -13,6 +13,8 @@ extends DifferentialConduitAPIMethod {
 
   protected function defineParamTypes() {
     return array(
+      'changes' => 'optional list<dict>',
+      'diff' => 'optional string',
       'repo' => 'required string',
       'base' => 'required string',
       'head' => 'required string',
@@ -39,15 +41,22 @@ extends DifferentialConduitAPIMethod {
     $base = $request->getValue('base');
     $head = $viewer->getGithubUsername().':'.$request->getValue('head');
     $message = $request->getValue('message');
+    $change_data = $request->getValue('changes');
+    $diff_data = $request->getValue('diff');
 
-    $authorGithubUser = new GithubApiUser();
-    $authorGithubUser->setUsername($viewer->getGithubUsername());
-    $authorGithubUser->setToken($viewer->getGithubAccessToken());
+    if ($diff_data) {
+      $raw_diff = $diff_data;
+    }
+    else{
+      $authorGithubUser = new GithubApiUser();
+      $authorGithubUser->setUsername($viewer->getGithubUsername());
+      $authorGithubUser->setToken($viewer->getGithubAccessToken());
 
-    $raw_diff = $authorGithubUser->getDiff($repo,$base,$head);
+      $raw_diff = $authorGithubUser->getDiff($repo,$base,$head);
 
-    if (!$raw_diff) {
-      throw new ConduitException('ERR_NO_CHANGES');
+      if (!$raw_diff) {
+        throw new ConduitException('ERR_NO_CHANGES');
+      }
     }
 
     $diff = id(new DifferentialDiff())->loadOneWhere(
@@ -108,20 +117,50 @@ extends DifferentialConduitAPIMethod {
       throw new ConduitException('ERR_UPTO_DATE');
     }
 
-    $call = new ConduitCall(
-      'differential.createrawdiff',
-      array(
-        'diff' => $raw_diff,
-        'repositoryPHID' => $revision->getRepositoryPHID(),
-        'repo' => $repo,
-        'base' => $base,
-        'head' => $head,
-        'viewPolicy' => 'users',
-        ));
-    $call->setUser($viewer);
-    $result = $call->execute();
+    if ($change_data) {
+      $diff_spec = array(
+        'changes' => $change_data,
+        'lintStatus' => 'skip',
+        'unitStatus' => 'skip',
+        'sourceMachine' => $request->getValue('sourceMachine'),
+        'sourcePath' => $request->getValue('sourcePath'),
+        'branch' => $request->getValue('branch'),
+        'bookmark' => $request->getValue('bookmark'),
+        'sourceControlSystem' => $request->getValue('sourceControlSystem'),
+        'sourceControlPath'  => $request->getValue('sourceControlPath'),
+        'sourceControlBaseRevision' => $request->getValue('sourceControlBaseRevision'),
+        'creationMethod' => $request->getValue('creationMethod'),
+        );
+       $call = new ConduitCall(
+        'differential.creatediff',
+        array(
+          'repositoryPHID' => $revision->getRepositoryPHID(),
+          'repo' => $repo,
+          'base' => $base,
+          'head' => $head,
+          'viewPolicy' => 'users',
+          ) + $diff_spec);
+       $call->setUser($viewer);
+       $result = $call->execute();
 
-    $diff_id = $result['id'];
+       $diff_id = $result['diffid'];
+    }
+    else {
+      $call = new ConduitCall(
+        'differential.createrawdiff',
+        array(
+          'diff' => $raw_diff,
+          'repositoryPHID' => $revision->getRepositoryPHID(),
+          'repo' => $repo,
+          'base' => $base,
+          'head' => $head,
+          'viewPolicy' => 'users',
+          ));
+      $call->setUser($viewer);
+      $result = $call->execute();
+
+      $diff_id = $result['id'];
+    }
 
     $newDiff = id(new DifferentialDiffQuery())
     ->setViewer($viewer)

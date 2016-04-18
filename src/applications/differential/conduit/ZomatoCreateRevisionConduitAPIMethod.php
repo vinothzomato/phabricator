@@ -99,14 +99,19 @@ final class ZomatoCreateRevisionConduitAPIMethod
       throw new ConduitException('ERR_NO_REVIEWERS');
     }
 
-    $authorGithubUser = new GithubApiUser();
-    $authorGithubUser->setUsername($viewer->getGithubUsername());
-    $authorGithubUser->setToken($viewer->getGithubAccessToken());
+    if ($diff_data) {
+      $diff = $diff_data;
+    }
+    else{
+      $authorGithubUser = new GithubApiUser();
+      $authorGithubUser->setUsername($viewer->getGithubUsername());
+      $authorGithubUser->setToken($viewer->getGithubAccessToken());
 
-    $diff = $authorGithubUser->getDiff($repo,$base,$head);
+      $diff = $authorGithubUser->getDiff($repo,$base,$head);
 
-    if (!$diff) {
-      throw new ConduitException('ERR_NO_CHANGES');
+      if (!$diff) {
+        throw new ConduitException('ERR_NO_CHANGES');
+      }
     }
 
     $prev_diff = id(new DifferentialDiff())->loadOneWhere(
