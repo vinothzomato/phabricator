@@ -43,7 +43,6 @@ final class ZomatoGetDiffConduitAPIMethod
     $project = id(new PhabricatorProjectQuery())
     ->setViewer($viewer)
     ->withIDs(array($projectId))
-    ->needReviewers(true)
     ->executeOne();
     if (!$project) {
       throw new ConduitException('ERR_PROJECT_NOT_FOUND');
@@ -62,7 +61,7 @@ final class ZomatoGetDiffConduitAPIMethod
       throw new ConduitException('ERR_NO_CHANGES');
     }
 
-    return array('diff' => $diff);;
+    return array('diff' => $diff);
   }
 
 }
