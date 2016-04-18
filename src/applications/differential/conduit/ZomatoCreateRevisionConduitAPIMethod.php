@@ -186,7 +186,7 @@ final class ZomatoCreateRevisionConduitAPIMethod
        $call->setUser($viewer);
        $result = $call->execute();
 
-       $diff_id = $result['id'];
+       $diff_id = $result['diffid'];
        $diffid = $diff_id;
       }
       else{
