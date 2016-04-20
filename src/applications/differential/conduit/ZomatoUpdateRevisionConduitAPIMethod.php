@@ -139,7 +139,7 @@ extends DifferentialConduitAPIMethod {
     }
 
     if ($change_data) {
-      return array('old' => $old_diff, 'new' => $new_diff);
+      //return array('old' => $old_diff, 'new' => $new_diff);
     }
 
     if ($change_data) {
