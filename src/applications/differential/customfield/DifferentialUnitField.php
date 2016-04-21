@@ -40,8 +40,8 @@ final class DifferentialUnitField
     } else if ($status == DifferentialUnitStatus::UNIT_AUTO_SKIP) {
       // Don't show any warnings.
     } else if ($status == DifferentialUnitStatus::UNIT_SKIP) {
-      $warnings[] = pht(
-        'Unit tests were skipped when generating these changes.');
+      //$warnings[] = pht(
+      //  'Unit tests were skipped when generating these changes.');
     } else {
       $warnings[] = pht('These changes have unit test problems.');
     }
